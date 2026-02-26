@@ -55,6 +55,7 @@
     <UnityVersion>2022.3.62f3</UnityVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Analyzer Include="C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\Extensions\Microsoft\Visual Studio Tools for Unity\Analyzers\Microsoft.Unity.Analyzers.dll" />
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\2022.3.62f3\Editor\Data\Tools\Unity.SourceGenerators\Unity.SourceGenerators.dll" />
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\2022.3.62f3\Editor\Data\Tools\Unity.SourceGenerators\Unity.Properties.SourceGenerator.dll" />
   </ItemGroup>
@@ -62,7 +63,10 @@
     <Compile Include="Assets\MapTransation.cs" />
     <Compile Include="Assets\TacController.cs" />
     <Compile Include="Assets\MenuController.cs" />
+    <Compile Include="Assets\Slot.cs" />
+    <Compile Include="Assets\InventoryController.cs" />
     <Compile Include="Assets\PlayerMovment.cs" />
+    <Compile Include="Assets\SaveData.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
