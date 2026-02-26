@@ -4598,7 +4598,9 @@ MonoBehaviour:
   inventoryPanel: {fileID: 1974114373}
   slotPrefab: {fileID: 7238876255219129188, guid: 7b38306697874e449be3e53857bff4b3, type: 3}
   slotCount: 24
-  itemPrefab: []
+  itemPrefab:
+  - {fileID: 574639647612006210, guid: 9836796ab3cabee45a937aba97af04ba, type: 3}
+  - {fileID: 3772229353461390914, guid: 573a6324b5ebaa446bc4dd6de4c02907, type: 3}
 --- !u!1 &1131911919
 GameObject:
   m_ObjectHideFlags: 0
@@ -79725,7 +79727,7 @@ MonoBehaviour:
       m_Calls: []
   m_text: SETTINGS
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 09f59bfdc252dff40ac5dd2341628583, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -79789,7 +79791,7 @@ MonoBehaviour:
   m_margin: {x: -157.18549, y: 0, z: -157.18604, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 0
+  m_hasFontAssetChanged: 1
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!222 &1194856838
@@ -79859,7 +79861,7 @@ MonoBehaviour:
       m_Calls: []
   m_text: MAP
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 09f59bfdc252dff40ac5dd2341628583, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -79923,7 +79925,7 @@ MonoBehaviour:
   m_margin: {x: -157.18549, y: 0, z: -157.18604, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 0
+  m_hasFontAssetChanged: 1
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!222 &1235777690
@@ -81037,8 +81039,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: PLAYER
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 09f59bfdc252dff40ac5dd2341628583, type: 2}
+  m_sharedMaterial: {fileID: 8757783599015305688, guid: 09f59bfdc252dff40ac5dd2341628583, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -81385,7 +81387,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 2147483647
+  m_StaticEditorFlags: 0
   m_IsActive: 1
 --- !u!224 &1974114374
 RectTransform:

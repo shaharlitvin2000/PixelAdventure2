@@ -63,6 +63,7 @@
     <Compile Include="Assets\MapTransation.cs" />
     <Compile Include="Assets\TacController.cs" />
     <Compile Include="Assets\MenuController.cs" />
+    <Compile Include="Assets\ItemDragHandler.cs" />
     <Compile Include="Assets\Slot.cs" />
     <Compile Include="Assets\InventoryController.cs" />
     <Compile Include="Assets\PlayerMovment.cs" />
