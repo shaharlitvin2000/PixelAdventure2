@@ -204,7 +204,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 76009678}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1090463103}
+        m_TargetAssemblyTypeName: SaveController, Assembly-CSharp
+        m_MethodName: SaveGame
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &76009678
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -323,6 +335,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mapBoundery: {fileID: 1946406113}
   direction: 0
+  offsetAmount: 2
 --- !u!60 &239933383
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -534,7 +547,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BoundingShape2D: {fileID: 1255957032}
-  m_Damping: 0
+  m_Damping: 0.5
   m_MaxWindowSize: -1
   m_Padding: 0
 --- !u!1 &472397766
@@ -4725,13 +4738,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1090463101}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 71c3af3015c4e0d47a6c9970971d1da5, type: 3}
+  m_Script: {fileID: 11500000, guid: f6d28ef5530b36441b42f8774e2f4671, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inventoryPanel: {fileID: 1974114373}
-  slotPrefab: {fileID: 7238876255219129188, guid: 7b38306697874e449be3e53857bff4b3, type: 3}
-  slotCount: 24
-  itemPrefabs: []
 --- !u!1 &1092771017
 GameObject:
   m_ObjectHideFlags: 0
@@ -81473,6 +81482,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mapBoundery: {fileID: 1255957032}
   direction: 1
+  offsetAmount: 2
 --- !u!60 &1692885694
 PolygonCollider2D:
   m_ObjectHideFlags: 0

@@ -1,31 +1,40 @@
-using Cinemachine;
 using UnityEngine;
+using Cinemachine;
 
 public class MapTransation : MonoBehaviour
 {
-    [SerializeField] PolygonCollider2D mapBoundery;
-    CinemachineConfiner2D confiner;
-    [SerializeField] Direction direction;
-    enum Direction { UP, Down, Left, Right}
-    void Start()
-    {
-        
-    }
+    [SerializeField] private PolygonCollider2D mapBoundery;
 
-    // Update is called once per frame
+    private CinemachineConfiner2D confiner;
+
+    public enum Direction { Up, Down, Right, Left }
+    [SerializeField] private Direction direction;
+
+    [SerializeField] private float offsetAmount = 2f;
+
     private void Awake()
     {
         confiner = FindObjectOfType<CinemachineConfiner2D>();
 
+        if (confiner == null)
+            Debug.LogError("CinemachineConfiner2D not found in scene!");
+
+        if (mapBoundery == null)
+            Debug.LogError("Map Boundary (PolygonCollider2D) not assigned!");
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.CompareTag("Player"))
+        if (!collision.CompareTag("Player"))
+            return;
+
+        if (confiner != null && mapBoundery != null)
         {
             confiner.m_BoundingShape2D = mapBoundery;
-            UpdatePlayerPosition(collision.gameObject);
+            confiner.InvalidateCache();
         }
+
+        UpdatePlayerPosition(collision.gameObject);
     }
 
     private void UpdatePlayerPosition(GameObject player)
@@ -33,27 +42,24 @@ public class MapTransation : MonoBehaviour
         Vector3 newPos = player.transform.position;
 
         switch (direction)
-        { 
-        case Direction.UP:
-                newPos.y += 2;
+        {
+            case Direction.Up:
+                newPos.y += offsetAmount;
                 break;
 
-
             case Direction.Down:
-                newPos.y -= 2;
+                newPos.y -= offsetAmount;
                 break;
 
             case Direction.Right:
-                newPos.x -= 2;
+                newPos.x += offsetAmount;
                 break;
 
             case Direction.Left:
-                newPos.x += 2;
+                newPos.x -= offsetAmount;
                 break;
         }
 
         player.transform.position = newPos;
     }
-
 }
-

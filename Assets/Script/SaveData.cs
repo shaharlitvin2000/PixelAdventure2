@@ -1,11 +1,12 @@
-using System.Collections.Generic;
 using UnityEngine;
+using System;
+
 
 [System.Serializable]
 public class SaveData
 {
-    public Vector3 playerPosition;
+    public float playerPosX;
+    public float playerPosY;
+    public float playerPosZ;
     public string mapBoundary;
-    public string currentItemID;
-    public List<InventorySaveData> inventorySaveData;
 }
