@@ -1,75 +1,98 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class InventoryController : MonoBehaviour
 {
-    private ItemDictionary itemDictionary;
+    [Header("References")]
+    [SerializeField] private ItemDictionary itemDictionary;
+    [SerializeField] private GameObject inventoryPanel;
+    [SerializeField] private GameObject slotPrefab;
 
-    public GameObject inventoryPanel;
-    public GameObject slotPrefab;
-    public int slotCount;
-    public GameObject[] itemPrefabs;
+    [Header("Settings")]
+    [SerializeField] private int slotCount = 20;
 
-    void Start()
+    private void Awake()
     {
-        itemDictionary = FindObjectOfType<ItemDictionary>();
+        if (itemDictionary == null)
+            itemDictionary = FindObjectOfType<ItemDictionary>();
 
-        //for (int i = 0; i < slotCount; i++)
-        //{
-        //    Slot slot = Instantiate(slotPrefab, inventoryPanel.transform).GetComponent<Slot>();
+        if (itemDictionary == null)
+            Debug.LogError("ItemDictionary not found in scene!");
 
-        //    if (i < itemPrefabs.Length)
-        //    {
-        //        GameObject item = Instantiate(itemPrefabs[i], slot.transform);
-        //        item.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
-        //        slot.currentItem = item;
-        //    }
-        //}
+        if (inventoryPanel == null)
+            Debug.LogError("inventoryPanel is NULL!");
+
+        if (slotPrefab == null)
+            Debug.LogError("slotPrefab is NULL!");
+
+        EnsureSlotCount();
     }
 
+    private void EnsureSlotCount()
+    {
+        // אם יש פחות מדי סלוטים — תיצור
+        while (inventoryPanel.transform.childCount < slotCount)
+        {
+            Instantiate(slotPrefab, inventoryPanel.transform);
+        }
+
+        // אם יש יותר מדי — תמחק
+        while (inventoryPanel.transform.childCount > slotCount)
+        {
+            DestroyImmediate(
+                inventoryPanel.transform
+                .GetChild(inventoryPanel.transform.childCount - 1)
+                .gameObject
+            );
+        }
+    }
+
+    // ================================
+    // SAVE
+    // ================================
     public List<InventorySaveData> GetInventoryItems()
     {
-        List<InventorySaveData> invData = new List<InventorySaveData>();
-        foreach (Transform slotTranform in inventoryPanel.transform)
+        List<InventorySaveData> saveData = new List<InventorySaveData>();
+
+        for (int i = 0; i < inventoryPanel.transform.childCount; i++)
         {
-            Slot slot = slotTranform.GetComponent<Slot>();
+            Transform slotTransform = inventoryPanel.transform.GetChild(i);
+            Slot slot = slotTransform.GetComponent<Slot>();
+
             if (slot.currentItem != null)
             {
                 Item item = slot.currentItem.GetComponent<Item>();
-                invData.Add(new InventorySaveData { itemID = item.ID, slotIndex = slotTranform.GetSiblingIndex() });
+
+                saveData.Add(new InventorySaveData
+                {
+                    itemID = item.ID,
+                    slotIndex = i
+                });
             }
         }
 
-        return invData;
+        return saveData;
     }
 
-    public void SetInventoryItems(List<InventorySaveData> inventorySaveData)
+    // ================================
+    // LOAD
+    // ================================
+    public void SetInventoryItems(List<InventorySaveData> savedItems)
     {
-        // ניקוי סלוטים
-        foreach (Transform child in inventoryPanel.transform)
+        if (itemDictionary == null)
         {
-            Slot slot = child.GetComponent<Slot>();
-            if (slot.currentItem != null)
-            {
-                Destroy(slot.currentItem);
-                slot.currentItem = null;
-            }
+            Debug.LogError("ItemDictionary is NULL!");
+            return;
         }
 
-        // ודא שיש בדיוק slotCount סלוטים
-        while (inventoryPanel.transform.childCount < slotCount)
-            Instantiate(slotPrefab, inventoryPanel.transform);
-        while (inventoryPanel.transform.childCount > slotCount)
-            Destroy(inventoryPanel.transform.GetChild(inventoryPanel.transform.childCount - 1).gameObject);
+        EnsureSlotCount();
+        ClearAllSlots();
 
-        // טען אייטמים לפי ID ו־SlotIndex
-        foreach (InventorySaveData data in inventorySaveData)
+        foreach (InventorySaveData data in savedItems)
         {
-            if (data.slotIndex >= slotCount) continue;
+            if (data.slotIndex < 0 || data.slotIndex >= slotCount)
+                continue;
 
-            Slot slot = inventoryPanel.transform.GetChild(data.slotIndex).GetComponent<Slot>();
             GameObject itemPrefab = itemDictionary.GetItemPrefab(data.itemID);
 
             if (itemPrefab == null)
@@ -78,9 +101,27 @@ public class InventoryController : MonoBehaviour
                 continue;
             }
 
-            GameObject item = Instantiate(itemPrefab, slot.transform);
-            item.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
-            slot.currentItem = item;
+            Transform slotTransform = inventoryPanel.transform.GetChild(data.slotIndex);
+            Slot slot = slotTransform.GetComponent<Slot>();
+
+            GameObject itemInstance = Instantiate(itemPrefab, slotTransform);
+            itemInstance.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
+
+            slot.currentItem = itemInstance;
+        }
+    }
+
+    private void ClearAllSlots()
+    {
+        foreach (Transform child in inventoryPanel.transform)
+        {
+            Slot slot = child.GetComponent<Slot>();
+
+            if (slot.currentItem != null)
+            {
+                Destroy(slot.currentItem);
+                slot.currentItem = null;
+            }
         }
     }
 }

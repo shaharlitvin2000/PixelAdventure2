@@ -1,26 +1,32 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using Cinemachine;
+using System.Collections.Generic;
 
 public class SaveController : MonoBehaviour
 {
     private string savePath;
-
-
-    void Start()
-    {
-        LoadGame();
-    }
+    private InventoryController inventoryController;
 
     private void Awake()
     {
-        savePath = Application.persistentDataPath + "/save.dat";
+
+        savePath = Application.persistentDataPath + "/save.json";
     }
 
+    private void Start()
+    {
+        inventoryController = FindObjectOfType<InventoryController>();
+        LoadGame();
+    }
+
+    // =================================
+    // SAVE
+    // =================================
     public void SaveGame()
     {
         Debug.Log("SAVE CALLED");
+
         GameObject player = GameObject.FindGameObjectWithTag("Player");
 
         SaveData saveData = new SaveData();
@@ -39,15 +45,25 @@ public class SaveController : MonoBehaviour
             saveData.mapBoundary = confiner.m_BoundingShape2D.gameObject.name;
         }
 
+        // 🔥 שמירת אינבנטורי
+        if (inventoryController != null)
+        {
+            saveData.inventorySaveData = inventoryController.GetInventoryItems();
+        }
+
         string json = JsonUtility.ToJson(saveData, true);
         File.WriteAllText(savePath, json);
 
         Debug.Log("Game Saved Successfully");
     }
 
+    // =================================
+    // LOAD
+    // =================================
     public void LoadGame()
     {
         Debug.Log("LOAD FUNCTION CALLED");
+
         if (!File.Exists(savePath))
         {
             Debug.LogWarning("No save file found!");
@@ -83,6 +99,12 @@ public class SaveController : MonoBehaviour
                     confiner.InvalidateCache();
                 }
             }
+        }
+
+        // 🔥 טעינת אינבנטורי
+        if (inventoryController != null && saveData.inventorySaveData != null)
+        {
+            inventoryController.SetInventoryItems(saveData.inventorySaveData);
         }
 
         Debug.Log("Game Loaded Successfully");
