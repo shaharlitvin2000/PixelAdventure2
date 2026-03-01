@@ -11,6 +11,30 @@ public class InventoryController : MonoBehaviour
     [Header("Settings")]
     [SerializeField] private int slotCount = 20;
 
+
+    public bool AddItem(GameObject itemPrefab)
+    {
+        foreach (Transform slotTransform in inventoryPanel.transform)
+        {
+            Slot slot = slotTransform.GetComponent<Slot>();
+
+            if (slot != null && slot.currentItem == null)
+            {
+                GameObject newItem = Instantiate(itemPrefab, slotTransform);
+
+                RectTransform rect = newItem.GetComponent<RectTransform>();
+                rect.anchoredPosition = Vector2.zero;
+                rect.localScale = Vector3.one;
+
+                slot.currentItem = newItem;
+
+                return true;
+            }
+        }
+
+        Debug.Log("Inventory is full!");
+        return false;
+    }
     private void Awake()
     {
         if (itemDictionary == null)

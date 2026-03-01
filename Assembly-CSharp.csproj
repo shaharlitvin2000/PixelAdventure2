@@ -67,6 +67,7 @@
     <Compile Include="Assets\Script\InventorySaveData.cs" />
     <Compile Include="Assets\Item.cs" />
     <Compile Include="Assets\Script\Slot.cs" />
+    <Compile Include="Assets\PlayerItemCollector.cs" />
     <Compile Include="Assets\Script\SaveController.cs" />
     <Compile Include="Assets\Script\SaveData.cs" />
     <Compile Include="Assets\Script\MenuController.cs" />
