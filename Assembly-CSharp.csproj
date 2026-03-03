@@ -73,6 +73,7 @@
     <Compile Include="Assets\Script\MenuController.cs" />
     <Compile Include="Assets\Script\ItemDragHandler.cs" />
     <Compile Include="Assets\Script\TacController.cs" />
+    <Compile Include="Assets\ItemPickupUIController.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
