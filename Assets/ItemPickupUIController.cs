@@ -12,8 +12,8 @@ public class ItemPickupUIController : MonoBehaviour
     [SerializeField] private int poolSize = 5;
     [SerializeField] private float popupDuration = 3f;
 
-    private Queue<GameObject> pool = new();
-    private List<GameObject> activePopups = new();
+    private Queue<GameObject> pool = new Queue<GameObject>();
+    private List<GameObject> activePopups = new List<GameObject>();
 
     private void Awake()
     {
@@ -25,7 +25,7 @@ public class ItemPickupUIController : MonoBehaviour
             return;
         }
 
-        // Create pool
+        // Create popup pool
         for (int i = 0; i < poolSize; i++)
         {
             GameObject popup = Instantiate(popupPrefab, transform);
@@ -36,13 +36,26 @@ public class ItemPickupUIController : MonoBehaviour
 
     public void ShowItemPickup(string itemName, Sprite icon)
     {
-        if (pool.Count == 0)
-            return; // pool exhausted – אתה מחליט אם להגדיל או להתעלם
+        GameObject popup;
 
-        GameObject popup = pool.Dequeue();
+        if (pool.Count > 0)
+        {
+            popup = pool.Dequeue();
+        }
+        else
+        {
+            // Reuse oldest popup
+            popup = activePopups[0];
+            activePopups.RemoveAt(0);
+
+            popup.SetActive(false);
+        }
+
         popup.SetActive(true);
 
-        popup.GetComponentInChildren<TMP_Text>().text = itemName;
+        TMP_Text text = popup.GetComponentInChildren<TMP_Text>();
+        if (text != null)
+            text.text = itemName;
 
         Image img = popup.transform.Find("ItemIcon")?.GetComponent<Image>();
         if (img != null)
@@ -56,6 +69,9 @@ public class ItemPickupUIController : MonoBehaviour
 
         activePopups.Add(popup);
 
+        // Force layout update so popups stack correctly
+        LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)transform);
+
         StartCoroutine(FadeAndReturn(popup, canvas));
     }
 
@@ -64,6 +80,7 @@ public class ItemPickupUIController : MonoBehaviour
         yield return new WaitForSeconds(popupDuration);
 
         float t = 0f;
+
         while (t < 1f)
         {
             t += Time.deltaTime;
@@ -72,7 +89,13 @@ public class ItemPickupUIController : MonoBehaviour
         }
 
         popup.SetActive(false);
-        activePopups.Remove(popup);
+
+        if (activePopups.Contains(popup))
+            activePopups.Remove(popup);
+
         pool.Enqueue(popup);
+
+        // Refresh layout after removal
+        LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)transform);
     }
 }
