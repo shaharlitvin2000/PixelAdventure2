@@ -24,6 +24,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: HeartItem Variant
       objectReference: {fileID: 0}
+    - target: {fileID: 1860803285419492073, guid: 9836796ab3cabee45a937aba97af04ba, type: 3}
+      propertyPath: bounceCount
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1860803285419492073, guid: 9836796ab3cabee45a937aba97af04ba, type: 3}
+      propertyPath: bounceHeight
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1860803285419492073, guid: 9836796ab3cabee45a937aba97af04ba, type: 3}
+      propertyPath: bounceDuration
+      value: 0.3
+      objectReference: {fileID: 0}
     - target: {fileID: 2233191523394829884, guid: 9836796ab3cabee45a937aba97af04ba, type: 3}
       propertyPath: m_Sprite
       value: 

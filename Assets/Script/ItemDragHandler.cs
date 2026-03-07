@@ -11,6 +11,10 @@ public class ItemDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     public float minDropDistance = 2f;
     public float maxDropDistance = 3f;
 
+    [SerializeField] LayerMask collisionMask;
+    [SerializeField] float checkRadius = 0.3f;
+    [SerializeField] int maxAttempts = 15;
+
     void Awake()
     {
         canvasGroup = GetComponent<CanvasGroup>();
@@ -42,6 +46,7 @@ public class ItemDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         if (dropSlot == null)
         {
             GameObject dropItem = eventData.pointerEnter;
+
             if (dropItem != null)
             {
                 dropSlot = dropItem.GetComponentInParent<Slot>();
@@ -99,9 +104,6 @@ public class ItemDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         );
     }
 
-    [SerializeField] LayerMask collisionMask;
-    [SerializeField] float checkRadius = 2f;
-    [SerializeField] int maxAttempts = 15;
 
     void DropItem(Slot originalSlot, Vector2 mousePosition)
     {
@@ -126,20 +128,28 @@ public class ItemDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
         Vector2 direction = (mouseWorld - playerTransform.position).normalized;
 
-        float distance = Random.Range(minDropDistance, maxDropDistance);
+        // מרחק העכבר מהשחקן
+        float mouseDistance = Vector2.Distance(playerTransform.position, mouseWorld);
+
+        // מגביל את המרחק אבל שומר את הכיוון
+        float distance = Mathf.Clamp(mouseDistance, minDropDistance, maxDropDistance);
 
         Vector2 dropPosition = (Vector2)playerTransform.position + direction * distance;
 
         int attempts = 0;
 
-        // אם יש collider במקום – ננסה להזיז עד שמוצאים מקום פנוי
         while (Physics2D.OverlapCircle(dropPosition, checkRadius, collisionMask) != null && attempts < maxAttempts)
         {
-            dropPosition += Random.insideUnitCircle * 0.5f;
+            dropPosition += Random.insideUnitCircle * 0.3f;
             attempts++;
         }
 
-        Instantiate(gameObject, dropPosition, Quaternion.identity);
+        GameObject droppedItem = Instantiate(gameObject, dropPosition, Quaternion.identity);
+
+        BounceEffect bounce = droppedItem.GetComponent<BounceEffect>();
+
+        if (bounce != null)
+            bounce.StartBounce();
 
         Destroy(gameObject);
     }

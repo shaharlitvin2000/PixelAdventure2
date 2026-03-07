@@ -61,6 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\HotbarController.cs" />
+    <Compile Include="Assets\BounceEffect.cs" />
     <Compile Include="Assets\ItemDictionary.cs" />
     <Compile Include="Assets\Script\MapTransation.cs" />
     <Compile Include="Assets\Script\PlayerMovment.cs" />
