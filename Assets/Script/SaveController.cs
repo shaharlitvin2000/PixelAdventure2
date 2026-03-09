@@ -118,6 +118,7 @@ public class SaveController : MonoBehaviour
 
             if (boundaryObject != null)
             {
+                PolygonCollider2D savedMapBoundary = GameObject.Find (saveData.mapBoundary).GetComponent<PolygonCollider2D>();
                 PolygonCollider2D collider = boundaryObject.GetComponent<PolygonCollider2D>();
 
                 if (confiner != null && collider != null)
@@ -127,6 +128,11 @@ public class SaveController : MonoBehaviour
                 }
 
                 MapController_Manual.Instance?.HighlightArea(saveData.mapBoundary);
+                MapController_Dynamic.Instance?.GenerateMap(savedMapBoundary);
+            }
+            else
+            {
+                MapController_Dynamic.Instance?.GenerateMap();
             }
         }
 

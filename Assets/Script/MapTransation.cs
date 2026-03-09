@@ -34,6 +34,7 @@ public class MapTransation : MonoBehaviour
             confiner.InvalidateCache();
         }
         MapController_Manual.Instance?.HighlightArea(mapBoundery.name);
+        MapController_Dynamic.Instance?.UpdateCurrentArea(mapBoundery.name);
 
         UpdatePlayerPosition(collision.gameObject);
     }
