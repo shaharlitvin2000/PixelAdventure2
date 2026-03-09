@@ -125,6 +125,8 @@ public class SaveController : MonoBehaviour
                     confiner.m_BoundingShape2D = collider;
                     confiner.InvalidateCache();
                 }
+
+                MapController_Manual.Instance?.HighlightArea(saveData.mapBoundary);
             }
         }
 

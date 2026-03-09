@@ -66,6 +66,7 @@
     <Compile Include="Assets\Script\MapTransation.cs" />
     <Compile Include="Assets\Script\PlayerMovment.cs" />
     <Compile Include="Assets\Script\InventoryController.cs" />
+    <Compile Include="Assets\MapController_Manual.cs" />
     <Compile Include="Assets\Script\InventorySaveData.cs" />
     <Compile Include="Assets\Item.cs" />
     <Compile Include="Assets\Script\Slot.cs" />

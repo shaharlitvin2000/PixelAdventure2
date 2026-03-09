@@ -33,6 +33,7 @@ public class MapTransation : MonoBehaviour
             confiner.m_BoundingShape2D = mapBoundery;
             confiner.InvalidateCache();
         }
+        MapController_Manual.Instance?.HighlightArea(mapBoundery.name);
 
         UpdatePlayerPosition(collision.gameObject);
     }
