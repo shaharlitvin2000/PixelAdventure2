@@ -1,0 +1,70 @@
+{
+  "version": "1.0.0",
+  "name": "Untitled Map",
+  "exportDate": "2026-03-10T19:45:42.935048Z",
+  "engine": "pixellab-map-editor",
+  "mapConfig": {
+    "tileSize": 16,
+    "dimensions": {
+      "width": 100,
+      "height": 53,
+      "pixelWidth": 1600,
+      "pixelHeight": 848
+    },
+    "boundingBox": {
+      "maxX": 99,
+      "maxY": 52,
+      "minX": 0,
+      "minY": 0
+    }
+  },
+  "terrains": [
+    {
+      "id": 1,
+      "name": "yellow dirt",
+      "color": "#92400e",
+      "baseTileId": "7a982051-faaa-4614-bc58-1be87c418442"
+    },
+    {
+      "id": 2,
+      "name": "grass ",
+      "color": "#22c55e",
+      "baseTileId": "3b35b89d-97c6-4ae2-9b2d-efae7332cfed"
+    },
+    {
+      "id": 3,
+      "name": "calm river blue water",
+      "color": "#2563eb",
+      "baseTileId": "6f145c90-4ba8-471a-a97d-472c0668cee6"
+    }
+  ],
+  "tilesets": [
+    {
+      "id": "759a47b7-c3a1-46c6-8083-99e27aad8427",
+      "filename": "calm river blue water-grass .png",
+      "lowerTerrain": "calm river blue water",
+      "upperTerrain": "grass ",
+      "lowerTerrainId": 3,
+      "upperTerrainId": 2,
+      "transitionSize": 0.5,
+      "transitionDescription": "rough stones",
+      "tileSize": 16,
+      "gridLayout": "4x4",
+      "wangIndexMapping": "standard"
+    },
+    {
+      "id": "24c8bf87-a294-465d-babb-ee1027b4b764",
+      "filename": "yellow dirt-grass .png",
+      "lowerTerrain": "yellow dirt",
+      "upperTerrain": "grass ",
+      "lowerTerrainId": 1,
+      "upperTerrainId": 2,
+      "transitionSize": 0.25,
+      "transitionDescription": "scattered rocks",
+      "tileSize": 16,
+      "gridLayout": "4x4",
+      "wangIndexMapping": "standard"
+    }
+  ],
+  "overlays": []
+}

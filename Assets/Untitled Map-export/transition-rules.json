@@ -1,0 +1,20 @@
+{
+  "transitions": [
+    {
+      "from": "calm river blue water",
+      "to": "grass ",
+      "fromId": 3,
+      "toId": 2,
+      "tilesetId": "759a47b7-c3a1-46c6-8083-99e27aad8427",
+      "transitionSize": 0.5
+    },
+    {
+      "from": "yellow dirt",
+      "to": "grass ",
+      "fromId": 1,
+      "toId": 2,
+      "tilesetId": "24c8bf87-a294-465d-babb-ee1027b4b764",
+      "transitionSize": 0.25
+    }
+  ]
+}

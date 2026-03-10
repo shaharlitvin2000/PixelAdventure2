@@ -1,0 +1,44 @@
+{
+  "version": "1.0.0",
+  "totalObjects": 2,
+  "objects": [
+    {
+      "id": "31f31938-cb8f-46c5-b663-29c151cec183",
+      "name": "Pixel art character, futuristic humanoid robot, full body, front view. Wearing a white and black space suit with mechanical details. Round helmet with a blue digital visor, sci-fi astronaut style. Small proportions, 2D sprite, clean pixel art, sharp pixels, no blur. Minimal shading, high contrast, retro game style. Standing pose, neutral expression. Transparent background, sprite sheet quality, 128x128 pixels style.",
+      "filename": "31f31938-cb8f-46c5-b663-29c151cec183.png",
+      "boundingBox": {
+        "x": 741.75,
+        "y": 363,
+        "width": 56,
+        "height": 56
+      },
+      "layer": 1,
+      "visible": true,
+      "locked": false,
+      "description": "Character: Pixel art character, futuristic humanoid robot, full body, front view. Wearing a white and black space suit with mechanical details. Round helmet with a blue digital visor, sci-fi astronaut style. Small proportions, 2D sprite, clean pixel art, sharp pixels, no blur. Minimal shading, high contrast, retro game style. Standing pose, neutral expression. Transparent background, sprite sheet quality, 128x128 pixels style. (south)",
+      "metadata": {
+        "generatedAt": "2026-03-10T18:49:28.260Z"
+      },
+      "isProgress": false
+    },
+    {
+      "id": "8e78f27d-9ea4-458b-85dd-e7f4dd22541b",
+      "name": "Object 0",
+      "filename": "8e78f27d-9ea4-458b-85dd-e7f4dd22541b.png",
+      "boundingBox": {
+        "x": 758.4000624219968,
+        "y": 175.40006242199684,
+        "width": 102,
+        "height": 92
+      },
+      "layer": 3,
+      "visible": true,
+      "locked": false,
+      "description": "\"Isolated, front-facing 2D pixel art sprite of a cozy wooden shop cabin, based on the colors and style of image_22.png. The building is fully oriented to look directly at the camera. Features a dark reddish-brown gabled roof, light timber frame, and a centered entrance with a prominent wooden 'SHOP' sign above. Two symmetric front-facing windows flank the entrance. Brightly lit interior visible with shelves of miniature potions and tools. The original two potted plants are positioned on small stone pedestals on either side of the camera-facing entrance. No ground patterns; sits on a clean paved area. Sharp outlines.\"",
+      "metadata": {
+        "generatedAt": "2026-03-10T19:23:58.271Z"
+      },
+      "isProgress": false
+    }
+  ]
+}
