@@ -16,15 +16,29 @@ public class InteractionDetector : MonoBehaviour
         interactionIcon.SetActive(false);
     }
 
+    void Update()
+    {
+        // אם המשחק בעצירה והאייקון דולק - נכבה אותו
+        // אם המשחק לא בעצירה ויש תיבה בטווח - נדליק אותו
+        if (PauseController.IsGamePaused)
+        {
+            if (interactionIcon.activeSelf) interactionIcon.SetActive(false);
+        }
+        else if (interactableInRange != null && interactableInRange.CanInteract())
+        {
+            if (!interactionIcon.activeSelf) interactionIcon.SetActive(true);
+        }
+    }
+
     public void OnInteract(InputAction.CallbackContext context)
     {
+        // בדיקה: אם המשחק בעצירה, אי אפשר לפתוח תיבות
+        if (PauseController.IsGamePaused) return;
+
         if (context.performed && interactableInRange != null)
         {
-            // ביצוע האינטראקציה (פתיחת התיבה)
             interactableInRange.Interact();
 
-            // בדיקה: אם אחרי הלחיצה האובייקט כבר לא ניתן לאינטראקציה (כי התיבה פתוחה)
-            // נעלים את האייקון מיד
             if (!interactableInRange.CanInteract())
             {
                 interactionIcon.SetActive(false);
@@ -38,9 +52,13 @@ public class InteractionDetector : MonoBehaviour
         {
             interactableInRange = interactable;
 
-            // הצבת האייקון מעל התיבה
             interactionIcon.transform.position = collision.transform.position + iconOffset;
-            interactionIcon.SetActive(true);
+
+            // נדליק את האייקון רק אם המשחק לא בעצירה כרגע
+            if (!PauseController.IsGamePaused)
+            {
+                interactionIcon.SetActive(true);
+            }
         }
     }
 

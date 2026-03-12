@@ -68,6 +68,7 @@
     <Compile Include="Assets\Chest.cs" />
     <Compile Include="Assets\Script\PlayerMovment.cs" />
     <Compile Include="Assets\Script\InventoryController.cs" />
+    <Compile Include="Assets\PauseController.cs" />
     <Compile Include="Assets\Script\InventorySaveData.cs" />
     <Compile Include="Assets\Script\Slot.cs" />
     <Compile Include="Assets\Script\ItemPickupUIController.cs" />

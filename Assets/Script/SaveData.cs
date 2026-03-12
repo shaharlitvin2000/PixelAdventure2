@@ -11,7 +11,16 @@ public class SaveData
     public float playerPosZ;
     public string mapBoundary;
 
+
     public List<InventorySaveData> inventorySaveData;
     public List<InventorySaveData> hotbarSaveData;
+    public List<ChestSaveData> chestSaveDatas;
 
+}
+
+[System.Serializable]
+public class ChestSaveData
+{
+    public string chestID;
+    public bool isOpened;
 }

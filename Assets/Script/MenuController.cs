@@ -5,11 +5,11 @@ using UnityEngine;
 public class MenuController : MonoBehaviour
 {
 
-    public GameObject MenuCanvas;
+    public GameObject menuCanvas;
     // Start is called before the first frame update
     void Start()
     {
-        MenuCanvas.SetActive(false);
+        menuCanvas.SetActive(false);  
     }
 
     // Update is called once per frame
@@ -17,7 +17,12 @@ public class MenuController : MonoBehaviour
     {
         if (Input.GetKeyUp(KeyCode.Escape))
         {
-            MenuCanvas.SetActive(!MenuCanvas.activeSelf);
+            if (!menuCanvas.activeSelf && PauseController.IsGamePaused)
+            {
+                return;
+            }
+            menuCanvas.SetActive(!menuCanvas.activeSelf);
+            PauseController.SetPause(menuCanvas.activeSelf);
 
         }
     }

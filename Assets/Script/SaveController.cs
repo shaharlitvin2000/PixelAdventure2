@@ -2,6 +2,7 @@
 using System.IO;
 using Cinemachine;
 using System.Collections.Generic;
+using System.Linq;
 
 public class SaveController : MonoBehaviour
 {
@@ -9,6 +10,7 @@ public class SaveController : MonoBehaviour
 
     private InventoryController inventoryController;
     private HotbarController hotbarController;
+    private Chest[] chests;
     private CinemachineConfiner2D confiner;
     private Transform player;
 
@@ -27,127 +29,104 @@ public class SaveController : MonoBehaviour
 
     private void Start()
     {
+        // מוצא את כל התיבות בסצנה
+        chests = FindObjectsOfType<Chest>();
         LoadGame();
     }
 
-    // =================================
-    // SAVE
-    // =================================
     public void SaveGame()
     {
         Debug.Log("SAVE CALLED");
 
-        SaveData saveData = new SaveData();
+        // יצירת אובייקט מה-SaveData הקיים שלך
+        SaveData data = new SaveData();
 
-        // Player Position
+        // שמירת מיקום
         if (player != null)
         {
-            saveData.playerPosX = player.position.x;
-            saveData.playerPosY = player.position.y;
-            saveData.playerPosZ = player.position.z;
+            data.playerPosX = player.position.x;
+            data.playerPosY = player.position.y;
+            data.playerPosZ = player.position.z;
         }
 
-        // Camera Boundary
+        // שמירת גבולות מצלמה
         if (confiner != null && confiner.m_BoundingShape2D != null)
         {
-            saveData.mapBoundary = confiner.m_BoundingShape2D.gameObject.name;
+            data.mapBoundary = confiner.m_BoundingShape2D.gameObject.name;
         }
 
-        // Inventory Save
+        // שמירת אינוונטורי
         if (inventoryController != null)
-        {
-            saveData.inventorySaveData = inventoryController.GetInventoryItems();
-        }
+            data.inventorySaveData = inventoryController.GetInventoryItems();
 
-        // Hotbar Save
         if (hotbarController != null)
-        {
-            saveData.hotbarSaveData = hotbarController.GetInventoryItems();
-        }
+            data.hotbarSaveData = hotbarController.GetInventoryItems();
 
-        string json = JsonUtility.ToJson(saveData, true);
+        // שמירת תיבות
+        data.chestSaveDatas = GetChestsState();
 
-        try
-        {
-            File.WriteAllText(savePath, json);
-            Debug.Log("Game Saved Successfully");
-        }
-        catch (System.Exception e)
-        {
-            Debug.LogError("Save failed: " + e.Message);
-        }
+        string json = JsonUtility.ToJson(data, true);
+        File.WriteAllText(savePath, json);
+        Debug.Log("Game Saved Successfully");
     }
 
-    // =================================
-    // LOAD
-    // =================================
+    private List<ChestSaveData> GetChestsState()
+    {
+        List<ChestSaveData> chestList = new List<ChestSaveData>();
+        if (chests == null) return chestList;
+
+        foreach (Chest chest in chests)
+        {
+            chestList.Add(new ChestSaveData
+            {
+                chestID = chest.ChestID,
+                isOpened = chest.IsOpened
+            });
+        }
+        return chestList;
+    }
+
     public void LoadGame()
     {
-        Debug.Log("LOAD FUNCTION CALLED");
-
-        if (!File.Exists(savePath))
-        {
-            Debug.LogWarning("No save file found!");
-            return;
-        }
+        if (!File.Exists(savePath)) return;
 
         string json = File.ReadAllText(savePath);
+        SaveData data = JsonUtility.FromJson<SaveData>(json);
 
-        if (string.IsNullOrEmpty(json))
-        {
-            Debug.LogError("Save file corrupted!");
-            return;
-        }
-
-        SaveData saveData = JsonUtility.FromJson<SaveData>(json);
-
-        // Player Position
+        // טעינת מיקום
         if (player != null)
+            player.position = new Vector3(data.playerPosX, data.playerPosY, data.playerPosZ);
+
+        // טעינת מצלמה
+        if (!string.IsNullOrEmpty(data.mapBoundary))
         {
-            player.position = new Vector3(
-                saveData.playerPosX,
-                saveData.playerPosY,
-                saveData.playerPosZ
-            );
-        }
-
-        // Load Camera Boundary
-        if (!string.IsNullOrEmpty(saveData.mapBoundary))
-        {
-            GameObject boundaryObject = GameObject.Find(saveData.mapBoundary);
-
-            if (boundaryObject != null)
+            GameObject boundaryObject = GameObject.Find(data.mapBoundary);
+            if (boundaryObject != null && confiner != null)
             {
-                PolygonCollider2D savedMapBoundary = GameObject.Find (saveData.mapBoundary).GetComponent<PolygonCollider2D>();
-                PolygonCollider2D collider = boundaryObject.GetComponent<PolygonCollider2D>();
-
-                if (confiner != null && collider != null)
-                {
-                    confiner.m_BoundingShape2D = collider;
-                    confiner.InvalidateCache();
-                }
-
-                MapController_Manual.Instance?.HighlightArea(saveData.mapBoundary);
-                MapController_Dynamic.Instance?.GenerateMap(savedMapBoundary);
-            }
-            else
-            {
-                MapController_Dynamic.Instance?.GenerateMap();
+                confiner.m_BoundingShape2D = boundaryObject.GetComponent<PolygonCollider2D>();
+                confiner.InvalidateCache();
             }
         }
 
-        // Load Inventory
-        if (inventoryController != null && saveData.inventorySaveData != null)
-        {
-            inventoryController.SetInventoryItems(saveData.inventorySaveData);
-        }
+        // טעינת פריטים
+        if (inventoryController != null && data.inventorySaveData != null)
+            inventoryController.SetInventoryItems(data.inventorySaveData);
 
-        // Load Hotbar
-        if (hotbarController != null && saveData.hotbarSaveData != null)
-        {
-            hotbarController.SetHotbarItems(saveData.hotbarSaveData);
-        }
+        if (hotbarController != null && data.hotbarSaveData != null)
+            hotbarController.SetHotbarItems(data.hotbarSaveData);
 
-        Debug.Log("Game Loaded Successfully");
+        // טעינת תיבות
+        if (data.chestSaveDatas != null)
+            LoadChestStates(data.chestSaveDatas);
+    }
+
+    private void LoadChestStates(List<ChestSaveData> chestState)
+    {
+        if (chests == null) return;
+        foreach (Chest chest in chests)
+        {
+            var state = chestState.FirstOrDefault(c => c.chestID == chest.ChestID);
+            if (state != null) chest.SetOpened(state.isOpened);
+        }
     }
 }
