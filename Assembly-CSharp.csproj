@@ -66,14 +66,15 @@
     <Compile Include="Assets\Script\MapTransation.cs" />
     <Compile Include="Assets\Script\PlayerMovment.cs" />
     <Compile Include="Assets\Script\InventoryController.cs" />
+    <Compile Include="Assets\Script\SoundEffectManager.cs" />
     <Compile Include="Assets\Script\IInteractable.cs" />
     <Compile Include="Assets\Script\InventorySaveData.cs" />
     <Compile Include="Assets\Script\PauseController.cs" />
-    <Compile Include="Assets\SoundEffectManager.cs" />
     <Compile Include="Assets\Script\Slot.cs" />
     <Compile Include="Assets\Script\ItemPickupUIController.cs" />
     <Compile Include="Assets\Script\SaveController.cs" />
     <Compile Include="Assets\Script\Item.cs" />
+    <Compile Include="Assets\Script\SoundEffectLibrary.cs" />
     <Compile Include="Assets\Script\InteractionDetector.cs" />
     <Compile Include="Assets\Script\PlayerItemCollector.cs" />
     <Compile Include="Assets\Script\HotbarController.cs" />
@@ -83,7 +84,6 @@
     <Compile Include="Assets\Script\ItemDragHandler.cs" />
     <Compile Include="Assets\Script\TacController.cs" />
     <Compile Include="Assets\Script\ItemDictionary.cs" />
-    <Compile Include="Assets\SoundEffectLibrary.cs" />
     <Compile Include="Assets\Script\GloballHelper.cs" />
   </ItemGroup>
   <ItemGroup>

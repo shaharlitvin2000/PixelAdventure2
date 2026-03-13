@@ -47,7 +47,7 @@ public class PlayerMovement : MonoBehaviour
         if (SoundEffectManager.Instance != null)
         {
             // זה יפעיל צליל אקראי מהרשימה ששמת ב-Library תחת השם Footsteps
-            SoundEffectManager.Instance.Play("Footsteps");
+            SoundEffectManager.Instance.Play("FootSteps");
         }
     }
 
