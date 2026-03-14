@@ -16,9 +16,10 @@ public class SoundEffectLibrary : MonoBehaviour
     {
         foreach (var group in soundEffectGroups)
         {
-            if (group.name == name && group.audioClips.Count > 0)
+            // הוספנו .Trim() ו-OrdinalIgnoreCase כדי שהקוד יהיה "חסין לטעויות"
+            if (group.name.Trim().Equals(name.Trim(), System.StringComparison.OrdinalIgnoreCase)
+                && group.audioClips.Count > 0)
             {
-                // בוחר צליל אקראי מתוך הרשימה (לגיוון)
                 int randomIndex = Random.Range(0, group.audioClips.Count);
                 return group.audioClips[randomIndex];
             }

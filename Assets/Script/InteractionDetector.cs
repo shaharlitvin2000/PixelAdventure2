@@ -78,7 +78,7 @@ public class InteractionDetector : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        // זה התיקון לשגיאה האדומה שראית בתמונה!
+        // הבדיקה הקריטית שמונעת את השגיאה האדומה:
         if (collision == null || collision.gameObject == null) return;
 
         if (collision.TryGetComponent(out IInteractable interactable))
