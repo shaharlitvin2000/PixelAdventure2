@@ -80,13 +80,14 @@ public class InteractionDetector : MonoBehaviour
     {
         // הבדיקה הקריטית שמונעת את השגיאה האדומה:
         if (collision == null || collision.gameObject == null) return;
-
-        if (collision.TryGetComponent(out IInteractable interactable))
         {
-            if (interactable == interactableInRange)
+            if (collision.TryGetComponent(out IInteractable interactable))
             {
-                interactableInRange = null;
-                interactionIcon.SetActive(false);
+                if (interactable == interactableInRange)
+                {
+                    interactableInRange = null;
+                    interactionIcon.SetActive(false);
+                }
             }
         }
     }

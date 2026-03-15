@@ -22,6 +22,7 @@ public class PlayerMovement : MonoBehaviour
         if (PauseController.IsGamePaused)
         {
             rb.velocity = Vector2.zero;
+            moveInput = Vector2.zero; // התיקון: מאפסים את הזיכרון של התנועה לגמרי
             animator.SetBool("isWalking", false);
             return;
         }
@@ -46,14 +47,14 @@ public class PlayerMovement : MonoBehaviour
     {
         if (SoundEffectManager.Instance != null)
         {
-            // זה יפעיל צליל אקראי מהרשימה ששמת ב-Library תחת השם Footsteps
-            SoundEffectManager.Instance.Play("FootSteps");
+            // תיקון קטן: לפי התמונה הקודמת שלך הקבוצה נקראת "Footsteps" עם s קטנה בסוף
+            SoundEffectManager.Instance.Play("Footsteps");
         }
     }
 
     public void Move(InputAction.CallbackContext context)
     {
-        if (PauseController.IsGamePaused) return;
+        // התיקון המרכזי: מחקנו את ה-return כדי שהמערכת תקלוט מתי שחררת את הכפתור, גם אם יש דיאלוג
 
         moveInput = context.ReadValue<Vector2>();
 

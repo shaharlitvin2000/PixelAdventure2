@@ -78,12 +78,14 @@
     <Compile Include="Assets\Script\InteractionDetector.cs" />
     <Compile Include="Assets\Script\PlayerItemCollector.cs" />
     <Compile Include="Assets\Script\HotbarController.cs" />
+    <Compile Include="Assets\NPC.cs" />
     <Compile Include="Assets\Script\SaveData.cs" />
     <Compile Include="Assets\Script\BounceEffect.cs" />
     <Compile Include="Assets\Script\MenuController.cs" />
     <Compile Include="Assets\Script\ItemDragHandler.cs" />
     <Compile Include="Assets\Script\TacController.cs" />
     <Compile Include="Assets\Script\ItemDictionary.cs" />
+    <Compile Include="Assets\NPCDialogue.cs" />
     <Compile Include="Assets\Script\GloballHelper.cs" />
   </ItemGroup>
   <ItemGroup>
