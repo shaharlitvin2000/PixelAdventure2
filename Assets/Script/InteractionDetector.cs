@@ -78,16 +78,15 @@ public class InteractionDetector : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        // הבדיקה הקריטית שמונעת את השגיאה האדומה:
+        // הגנה קריטית: אם האובייקט כבר נמחק (Destroyed), אל תמשיך
         if (collision == null || collision.gameObject == null) return;
+
+        if (collision.TryGetComponent(out IInteractable interactable))
         {
-            if (collision.TryGetComponent(out IInteractable interactable))
+            if (interactable == interactableInRange)
             {
-                if (interactable == interactableInRange)
-                {
-                    interactableInRange = null;
-                    interactionIcon.SetActive(false);
-                }
+                interactableInRange = null;
+                if (interactionIcon != null) interactionIcon.SetActive(false);
             }
         }
     }

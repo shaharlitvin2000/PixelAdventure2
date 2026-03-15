@@ -11,6 +11,10 @@ public class NPC : MonoBehaviour, IInteractable
     public TMP_Text dialogueText, nameText;
     public Image portraitImage;
 
+    [Header("Unique Settings")]
+    [Tooltip("השם המדויק של קבוצת הסאונד ב-SoundEffectLibrary")]
+    public string voiceSoundName = "NPC";
+
     private int dialogueIndex;
     private bool isTyping, isDialogueActive;
 
@@ -35,7 +39,6 @@ public class NPC : MonoBehaviour, IInteractable
         }
     }
 
-
     void StartDialogue()
     {
         isDialogueActive = true;
@@ -52,13 +55,20 @@ public class NPC : MonoBehaviour, IInteractable
 
     void Update()
     {
-        // אנחנו בודקים אם הדיאלוג פעיל ואם השחקן לחץ על המקש השמאלי בעכבר (0)
+        // פותר את בעיית ה-X: אם הפאנל נסגר ידנית, הקוד מתאפס
+        if (isDialogueActive && dialoguePanel != null && !dialoguePanel.activeInHierarchy)
+        {
+            EndDialogue();
+            return;
+        }
+
+        // זירוז טקסט
         if (isDialogueActive && Input.GetMouseButtonDown(0))
         {
-            // אם לחצנו בזמן שהטקסט מודפס, זה יקרא ל-NextLine שתשלים את השורה מיד
             NextLine();
         }
     }
+
     void NextLine()
     {
         if (isTyping)
@@ -86,13 +96,11 @@ public class NPC : MonoBehaviour, IInteractable
         {
             dialogueText.text += letter;
 
-            // --- כאן הוספנו את הסאונד ---
-            // אנחנו בודקים שהאות היא לא רווח כדי שזה יישמע כמו דיבור אמיתי
             if (letter != ' ' && SoundEffectManager.Instance != null)
             {
-                SoundEffectManager.Instance.Play("NPC");
+                // משתמש במשתנה voiceSoundName במקום ב-"NPC" קבוע
+                SoundEffectManager.Instance.Play(voiceSoundName);
             }
-            // ---------------------------
 
             yield return new WaitForSeconds(dialogueData.typingSpeed);
         }
@@ -110,8 +118,8 @@ public class NPC : MonoBehaviour, IInteractable
     {
         StopAllCoroutines();
         isDialogueActive = false;
-        dialogueText.SetText("");
-        dialoguePanel.SetActive(false);
+        if (dialogueText != null) dialogueText.SetText("");
+        if (dialoguePanel != null) dialoguePanel.SetActive(false);
         PauseController.SetPause(false);
     }
 }

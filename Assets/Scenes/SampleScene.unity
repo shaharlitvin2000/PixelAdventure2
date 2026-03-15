@@ -82440,11 +82440,9 @@ MonoBehaviour:
   - name: NPC
     audioClips:
     - {fileID: 8300000, guid: e0ecd3bcc0f9fc041be8aff77292b17a, type: 3}
-  - name: NPC
+  - name: NPC_Cat
     audioClips:
-    - {fileID: 8300000, guid: d58ea256a1647f442bbb591c301494c7, type: 3}
-    - {fileID: 8300000, guid: 561e31722c4ef824f9391ab6508461bb, type: 3}
-    - {fileID: 8300000, guid: efd90a33a49c40243baba70e93cb726d, type: 3}
+    - {fileID: 8300000, guid: c4730b5f4658f854faea1b195d36d1f9, type: 3}
 --- !u!1 &1420030148
 GameObject:
   m_ObjectHideFlags: 0
@@ -82481,6 +82479,7 @@ MonoBehaviour:
   dialogueText: {fileID: 1871833921}
   nameText: {fileID: 794213597}
   portraitImage: {fileID: 749573468}
+  voiceSoundName: NPC
 --- !u!61 &1420030150
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -83117,6 +83116,7 @@ MonoBehaviour:
   dialogueText: {fileID: 1871833921}
   nameText: {fileID: 794213597}
   portraitImage: {fileID: 749573468}
+  voiceSoundName: NPC_Cat
 --- !u!61 &1562863188
 BoxCollider2D:
   m_ObjectHideFlags: 0
