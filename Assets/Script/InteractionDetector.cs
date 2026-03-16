@@ -31,6 +31,9 @@ public class InteractionDetector : MonoBehaviour
                 if (interactableInRange.CanInteract())
                 {
                     if (!interactionIcon.activeSelf) interactionIcon.SetActive(true);
+
+                    // התיקון: מעדכנים את המיקום של האייקון בכל פריים כדי שיעקוב אחרי ה-NPC בזמן שהוא זז
+                    interactionIcon.transform.position = mb.transform.position + iconOffset;
                 }
             }
             else
