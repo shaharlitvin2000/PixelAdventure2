@@ -4,10 +4,10 @@ using UnityEngine.InputSystem;
 public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] private float moveSpeed = 5f;
-    [SerializeField] private float footstepDelay = 0.4f; // כמה זמן לחכות בין צעד לצעד
-
+    [SerializeField] private float footstepDelay = 0.4f;
     private Rigidbody2D rb;
     private Vector2 moveInput;
+    private Vector2 lastMoveInput = Vector2.down; // שומר כיוון אחרון!
     private Animator animator;
     private float footstepTimer;
 
@@ -22,7 +22,7 @@ public class PlayerMovement : MonoBehaviour
         if (PauseController.IsGamePaused)
         {
             rb.velocity = Vector2.zero;
-            moveInput = Vector2.zero; // התיקון: מאפסים את הזיכרון של התנועה לגמרי
+            moveInput = Vector2.zero;
             animator.SetBool("isWalking", false);
             return;
         }
@@ -31,14 +31,13 @@ public class PlayerMovement : MonoBehaviour
         bool isMoving = rb.velocity.magnitude > 0.1f;
         animator.SetBool("isWalking", isMoving);
 
-        // מנגנון השמעת צעדים
         if (isMoving)
         {
             footstepTimer -= Time.deltaTime;
             if (footstepTimer <= 0)
             {
                 PlayFootstep();
-                footstepTimer = footstepDelay; // איפוס הטיימר
+                footstepTimer = footstepDelay;
             }
         }
     }
@@ -46,26 +45,26 @@ public class PlayerMovement : MonoBehaviour
     private void PlayFootstep()
     {
         if (SoundEffectManager.Instance != null)
-        {
-            // תיקון קטן: לפי התמונה הקודמת שלך הקבוצה נקראת "Footsteps" עם s קטנה בסוף
             SoundEffectManager.Instance.Play("Footsteps");
-        }
     }
 
     public void Move(InputAction.CallbackContext context)
     {
-        // התיקון המרכזי: מחקנו את ה-return כדי שהמערכת תקלוט מתי שחררת את הכפתור, גם אם יש דיאלוג
-
         moveInput = context.ReadValue<Vector2>();
+        animator.SetFloat("InputX", moveInput.x);
+        animator.SetFloat("InputY", moveInput.y);
 
         if (context.canceled)
         {
             animator.SetBool("isWalking", false);
-            animator.SetFloat("LastInputX", moveInput.x);
-            animator.SetFloat("LastInputY", moveInput.y);
+            // שומר את הכיוון האחרון האמיתי — לא האפס!
+            animator.SetFloat("LastInputX", lastMoveInput.x);
+            animator.SetFloat("LastInputY", lastMoveInput.y);
         }
-
-        animator.SetFloat("InputX", moveInput.x);
-        animator.SetFloat("InputY", moveInput.y);
+        else
+        {
+            // שומר כיוון רק כשזזים בפועל
+            lastMoveInput = moveInput;
+        }
     }
 }

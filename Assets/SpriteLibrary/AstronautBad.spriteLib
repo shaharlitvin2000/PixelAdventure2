@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Library:
-  - m_Name: IDLE
-    m_Hash: 716265633
+  - m_Name: Idle
+    m_Hash: 1008081451
     m_CategoryList: []
     m_OverrideEntries:
     - m_Name: Pixel_art_character_futuristic_humanoid_robot_full_walk_east
@@ -311,5 +311,5 @@ MonoBehaviour:
     m_FromMain: 0
     m_EntryOverrideCount: 49
   m_PrimaryLibraryGUID: 
-  m_ModificationHash: 639092748477500345
+  m_ModificationHash: 639094334538518126
   m_Version: 1
