@@ -82343,7 +82343,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Library: []
-  m_SpriteLibraryAsset: {fileID: 7108339969198208228, guid: 5b57df10b8265474d83a32420e859762, type: 3}
+  m_SpriteLibraryAsset: {fileID: 7108339969198208228, guid: ae64b6d01be48eb44a152dffac156b81, type: 3}
 --- !u!1 &1371802805
 GameObject:
   m_ObjectHideFlags: 0
