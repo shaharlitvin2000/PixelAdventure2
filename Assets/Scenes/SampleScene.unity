@@ -82085,7 +82085,7 @@ SpriteRenderer:
   m_SortingLayerID: -1887774519
   m_SortingLayer: 4
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 0299172fea5332e43b34899c2319e9d9, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 91d4b31b3386ed44d8bca4565f7346f2, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -82293,7 +82293,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1.92, y: 1.92}
+    oldSize: {x: 2.1333334, y: 2.1333334}
     newSize: {x: 0.56, y: 0.56}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -82326,10 +82326,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed8b1ae4e4e52b34ea557c1c11e076fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_CategoryHash: 0.009161512
-  m_labelHash: 1.0746542
+  m_CategoryHash: 3.093696e-22
+  m_labelHash: 2.9014213e-11
   m_SpriteKey: 0
-  m_SpriteHash: 98451184
+  m_SpriteHash: 1072412417
 --- !u!114 &1322103572
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -82343,7 +82343,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Library: []
-  m_SpriteLibraryAsset: {fileID: 7108339969198208228, guid: fc383a82728de304c8789235aac40cbd, type: 3}
+  m_SpriteLibraryAsset: {fileID: 7108339969198208228, guid: 17b391e9d603cde42a5b9f9b1298552d, type: 3}
 --- !u!1 &1371802805
 GameObject:
   m_ObjectHideFlags: 0
@@ -83627,7 +83627,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Library: []
-  m_SpriteLibraryAsset: {fileID: 0}
+  m_SpriteLibraryAsset: {fileID: 7108339969198208228, guid: 17b391e9d603cde42a5b9f9b1298552d, type: 3}
 --- !u!1 &1566205977
 GameObject:
   m_ObjectHideFlags: 0
