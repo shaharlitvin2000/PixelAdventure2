@@ -16,9 +16,20 @@ MonoBehaviour:
   npcPortrait: {fileID: 21300000, guid: d684db9950387034a97e11e01f2db211, type: 3}
   dialogueLines:
   - I will kill you in your sleep!!!
-  - 'Just joking <:'
-  autoProgressLines: 0100
+  - Do you need something?
+  - Well I dont care!
+  - Bye!!!
+  - Then give me some Milk!!!
+  - Thanks:>
+  autoProgressLines: 010001000100
+  endDialogueLines: 000000010001
   autoProgressDelay: 1.5
   typingSpeed: 0.05
   voiceSound: {fileID: 8300000, guid: c4730b5f4658f854faea1b195d36d1f9, type: 3}
   voicePitch: 1
+  choices:
+  - dialogueIndex: 1
+    choices:
+    - Yes
+    - No
+    nextDialogueIndex: 0200000004000000

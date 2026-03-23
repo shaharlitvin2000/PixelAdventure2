@@ -66,6 +66,7 @@
     <Compile Include="Assets\Script\MapTransation.cs" />
     <Compile Include="Assets\Script\PlayerMovment.cs" />
     <Compile Include="Assets\Script\InventoryController.cs" />
+    <Compile Include="Assets\DialogueController.cs" />
     <Compile Include="Assets\Script\SoundEffectManager.cs" />
     <Compile Include="Assets\Script\IInteractable.cs" />
     <Compile Include="Assets\Script\InventorySaveData.cs" />
