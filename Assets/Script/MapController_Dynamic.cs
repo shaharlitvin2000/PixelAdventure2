@@ -1,11 +1,11 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class MapController_Dynamic : MonoBehaviour
 {
-    [Header("UI Rerence")]
+    [Header("UI Reference")]
     public RectTransform mapParent;
     public GameObject areaPrefab;
     public RectTransform playerIcon;
@@ -22,26 +22,38 @@ public class MapController_Dynamic : MonoBehaviour
     private PolygonCollider2D[] mapAreas;
     private Dictionary<string, RectTransform> uiAreas = new Dictionary<string, RectTransform>();
 
-    public static MapController_Dynamic Instance { get; set; }
+    public static MapController_Dynamic Instance { get; private set; }
 
     private void Awake()
     {
-        if (Instance == null)
+        if (Instance == null) Instance = this;
+        else { Destroy(gameObject); return; }
+
+        // ✅ Null check on mapBounds
+        if (mapBounds == null)
         {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
+            Debug.LogError("mapBounds is NULL! Assign it in the Inspector.");
+            return;
         }
 
         mapAreas = mapBounds.GetComponentsInChildren<PolygonCollider2D>();
     }
 
+    // ✅ Auto-generate map on start
+    private void Start()
+    {
+        GenerateMap(initialArea);
+    }
+
     public void GenerateMap(PolygonCollider2D newCurrentArea = null)
     {
-        PolygonCollider2D currentArea = newCurrentArea != null ? newCurrentArea : initialArea;
+        if (mapAreas == null || mapAreas.Length == 0)
+        {
+            Debug.LogError("No map areas found! Check mapBounds.");
+            return;
+        }
 
+        PolygonCollider2D currentArea = newCurrentArea != null ? newCurrentArea : initialArea;
         ClearMap();
 
         foreach (PolygonCollider2D area in mapAreas)
@@ -55,25 +67,26 @@ public class MapController_Dynamic : MonoBehaviour
     private void ClearMap()
     {
         foreach (Transform child in mapParent)
-        {
             Destroy(child.gameObject);
-        }
 
         uiAreas.Clear();
     }
 
     private void CreateAreaUI(PolygonCollider2D area, bool isCurrent)
     {
+        // ✅ Duplicate name protection
+        if (uiAreas.ContainsKey(area.name))
+        {
+            Debug.LogWarning($"Duplicate area name: '{area.name}' — skipping!");
+            return;
+        }
+
         GameObject areaImage = Instantiate(areaPrefab, mapParent);
         RectTransform rectTransform = areaImage.GetComponent<RectTransform>();
-
         Bounds bounds = area.bounds;
-
         rectTransform.sizeDelta = new Vector2(bounds.size.x * mapScale, bounds.size.y * mapScale);
         rectTransform.anchoredPosition = (Vector2)bounds.center * mapScale;
-
         areaImage.GetComponent<Image>().color = isCurrent ? currentAreaColor : defaultColor;
-
         uiAreas[area.name] = rectTransform;
     }
 
@@ -81,9 +94,9 @@ public class MapController_Dynamic : MonoBehaviour
     {
         foreach (KeyValuePair<string, RectTransform> area in uiAreas)
         {
-            area.Value.GetComponent<Image>().color = area.Key == newCurrentArea ? currentAreaColor : defaultColor;
+            area.Value.GetComponent<Image>().color =
+                area.Key == newCurrentArea ? currentAreaColor : defaultColor;
         }
-
         MovePlayerIcon(newCurrentArea);
     }
 
@@ -92,6 +105,10 @@ public class MapController_Dynamic : MonoBehaviour
         if (uiAreas.TryGetValue(newCurrentArea, out RectTransform areaUI))
         {
             playerIcon.anchoredPosition = areaUI.anchoredPosition;
+        }
+        else
+        {
+            Debug.LogWarning($"Area '{newCurrentArea}' not found in map!");
         }
     }
 }

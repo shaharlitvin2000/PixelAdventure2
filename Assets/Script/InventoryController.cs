@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class InventoryController : MonoBehaviour
 {
-    public static InventoryController instance; // Singleton
+    public static InventoryController instance;
 
     [Header("References")]
     [SerializeField] private ItemDictionary itemDictionary;
@@ -15,7 +15,6 @@ public class InventoryController : MonoBehaviour
 
     private void Awake()
     {
-        // Singleton setup
         instance = this;
 
         if (itemDictionary == null)
@@ -33,12 +32,13 @@ public class InventoryController : MonoBehaviour
         EnsureSlotCount();
     }
 
-    public bool AddItem(GameObject itemPrefab)
+    // ✅ quantity parameter added
+    public bool AddItem(GameObject itemPrefab, int quantity = 1)
     {
         Item itemToAdd = itemPrefab.GetComponent<Item>();
         if (itemToAdd == null) return false;
 
-        // Look for an existing slot with the same item to stack
+        // ✅ Try to stack onto existing same item first
         foreach (Transform slotTransform in inventoryPanel.transform)
         {
             Slot slot = slotTransform.GetComponent<Slot>();
@@ -47,13 +47,14 @@ public class InventoryController : MonoBehaviour
                 Item slotItem = slot.currentItem.GetComponent<Item>();
                 if (slotItem != null && slotItem.ID == itemToAdd.ID)
                 {
-                    slotItem.AddToStack();
+                    // ✅ Pass actual quantity, not hardcoded 1
+                    slotItem.AddToStack(quantity);
                     return true;
                 }
             }
         }
 
-        // Look for an empty slot
+        // ✅ Empty slot — create new item with correct quantity
         foreach (Transform slotTransform in inventoryPanel.transform)
         {
             Slot slot = slotTransform.GetComponent<Slot>();
@@ -63,6 +64,15 @@ public class InventoryController : MonoBehaviour
                 RectTransform rect = newItem.GetComponent<RectTransform>();
                 rect.anchoredPosition = Vector2.zero;
                 rect.localScale = Vector3.one;
+
+                // ✅ Set correct quantity
+                Item newItemComponent = newItem.GetComponent<Item>();
+                if (newItemComponent != null)
+                {
+                    newItemComponent.quantity = quantity;
+                    newItemComponent.UpdateQuantityDisplay();
+                }
+
                 slot.currentItem = newItem;
                 return true;
             }
@@ -140,7 +150,7 @@ public class InventoryController : MonoBehaviour
             itemInstance.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
 
             Item itemComponent = itemInstance.GetComponent<Item>();
-            if (itemComponent != null && data.quantity > 1)
+            if (itemComponent != null)
             {
                 itemComponent.quantity = data.quantity;
                 itemComponent.UpdateQuantityDisplay();

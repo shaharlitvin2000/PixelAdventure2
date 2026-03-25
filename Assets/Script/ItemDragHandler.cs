@@ -64,7 +64,6 @@ public class ItemDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
                 if (draggedItem.ID == targetItem.ID)
                 {
-                    // Stack onto existing item
                     targetItem.AddToStack(draggedItem.quantity);
                     originalSlot.currentItem = null;
                     Destroy(gameObject);
@@ -72,71 +71,76 @@ public class ItemDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
                 }
                 else
                 {
-                    // FIX (נעלמים) — שמור reference לפריט שנמצא ב-dropSlot לפני שמנקים
                     GameObject swappedItem = dropSlot.currentItem;
-
                     swappedItem.transform.SetParent(originalSlot.transform);
                     swappedItem.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
-
-                    originalSlot.currentItem = swappedItem; // original slot מקבל את הפריט שהוחלף
-                    dropSlot.currentItem = null;             // מנקים drop slot לפני שמכניסים את הפריט הנגרר
+                    originalSlot.currentItem = swappedItem;
+                    dropSlot.currentItem = null;
                 }
             }
             else
             {
-                // FIX (נעלמים) — slot ריק, מנקים את ה-original slot
                 originalSlot.currentItem = null;
             }
 
-            // מכניסים את הפריט הנגרר ל-drop slot
             transform.SetParent(dropSlot.transform);
             transform.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
             dropSlot.currentItem = gameObject;
         }
         else
         {
-            bool insideInventory = IsWithinInventory(eventData.position);
+            // ✅ Check if dropped inside hotbar or inventory
+            bool insideHotbar = hotbarRect != null &&
+                RectTransformUtility.RectangleContainsScreenPoint(hotbarRect, eventData.position);
 
-            bool insideHotbar = RectTransformUtility.RectangleContainsScreenPoint(
-                hotbarRect,
-                eventData.position
-            );
+            bool insideInventory = IsWithinInventory(eventData.position);
 
             if (!insideInventory && !insideHotbar)
             {
+                // ✅ Only drop to ground if truly outside ALL UI
                 DropItem(originalSlot, eventData.position);
                 return;
             }
 
-            transform.SetParent(originalParent);
-            transform.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
+            // ✅ Dropped on hotbar background or inventory background — return to original slot
+            ReturnToOriginalSlot(originalSlot);
         }
+    }
+
+    // ✅ New method — safely returns item to its original slot
+    private void ReturnToOriginalSlot(Slot originalSlot)
+    {
+        transform.SetParent(originalParent);
+        transform.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
+
+        // Make sure the slot reference is restored
+        if (originalSlot != null)
+            originalSlot.currentItem = gameObject;
     }
 
     bool IsWithinInventory(Vector2 mousePosition)
     {
+        // ✅ Null check so it doesn't crash if item came from hotbar
+        if (originalParent == null || originalParent.parent == null)
+            return false;
+
         RectTransform inventoryRect = originalParent.parent.GetComponent<RectTransform>();
+        if (inventoryRect == null) return false;
+
         return RectTransformUtility.RectangleContainsScreenPoint(inventoryRect, mousePosition);
     }
 
     void DropItem(Slot originalSlot, Vector2 mousePosition)
     {
         Item item = GetComponent<Item>();
-
-        // FIX (זורק הכל) — שומר את הכמות המלאה לפני שמוחק
         int quantityToDrop = item.quantity;
-
-        // מנקים את ה-slot מיד
         originalSlot.currentItem = null;
 
         GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
         if (playerObject == null)
         {
             Debug.LogError("Missing Player Tag");
-            // מחזירים את הפריט ל-slot אם נכשל
-            originalSlot.currentItem = gameObject;
-            transform.SetParent(originalParent);
-            GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
+            ReturnToOriginalSlot(originalSlot);
             return;
         }
 
@@ -151,7 +155,6 @@ public class ItemDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         Vector2 direction = (mouseWorld - playerTransform.position).normalized;
         float mouseDistance = Vector2.Distance(playerTransform.position, mouseWorld);
         float distance = Mathf.Clamp(mouseDistance, minDropDistance, maxDropDistance);
-
         Vector2 dropPosition = (Vector2)playerTransform.position + direction * distance;
 
         int attempts = 0;
@@ -161,7 +164,6 @@ public class ItemDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             attempts++;
         }
 
-        // FIX (זורק הכל) — יוצר אובייקט אחד עם הכמות המלאה
         GameObject droppedObject = Instantiate(gameObject, dropPosition, Quaternion.identity);
         Item droppedItem = droppedObject.GetComponent<Item>();
         droppedItem.quantity = quantityToDrop;
@@ -171,7 +173,6 @@ public class ItemDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         if (bounce != null)
             bounce.StartBounce();
 
-        // מוחקים את ה-UI item המקורי
         Destroy(gameObject);
     }
 
@@ -184,7 +185,6 @@ public class ItemDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     private void SplitStack()
     {
         Item item = GetComponent<Item>();
-
         if (item == null || item.quantity <= 1) return;
 
         int splitAmount = item.quantity / 2;
@@ -211,7 +211,6 @@ public class ItemDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             }
         }
 
-        // אין slot פנוי — מחזירים
         item.AddToStack(splitAmount);
         Destroy(newItem);
     }

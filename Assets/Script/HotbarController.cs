@@ -10,7 +10,6 @@ public class HotbarController : MonoBehaviour
     public int slotCount = 7;
 
     private ItemDictionary itemDictionary;
-
     private Key[] hotbarKeys;
 
     private void Awake()
@@ -19,9 +18,7 @@ public class HotbarController : MonoBehaviour
 
         hotbarKeys = new Key[slotCount];
         for (int i = 0; i < slotCount; i++)
-        {
             hotbarKeys[i] = i < 6 ? (Key)((int)Key.Digit1 + i) : Key.Digit0;
-        }
 
         if (itemDictionary == null)
             Debug.LogError("ItemDictionary not found in scene!");
@@ -35,15 +32,12 @@ public class HotbarController : MonoBehaviour
         EnsureSlotCount();
     }
 
-    // Update is called once per frame
     void Update()
     {
         for (int i = 0; i < slotCount; i++)
         {
             if (Keyboard.current != null && Keyboard.current[hotbarKeys[i]].wasPressedThisFrame)
-            {
                 UseItemInSlot(i);
-            }
         }
     }
 
@@ -57,54 +51,66 @@ public class HotbarController : MonoBehaviour
         }
     }
 
-
-
-    public bool GetHotberItem(GameObject itemPrefab)
+    // ✅ quantity parameter added + stacking support
+    public bool GetHotberItem(GameObject itemPrefab, int quantity = 1)
     {
+        Item incomingItem = itemPrefab.GetComponent<Item>();
+
+        // ✅ First try to stack onto existing same item
         foreach (Transform slotTransform in hotbarPanel.transform)
         {
             Slot slot = slotTransform.GetComponent<Slot>();
+            if (slot != null && slot.currentItem != null)
+            {
+                Item existingItem = slot.currentItem.GetComponent<Item>();
+                if (existingItem != null && existingItem.ID == incomingItem.ID)
+                {
+                    existingItem.AddToStack(quantity);
+                    return true;
+                }
+            }
+        }
 
+        // ✅ Then find empty slot and set correct quantity
+        foreach (Transform slotTransform in hotbarPanel.transform)
+        {
+            Slot slot = slotTransform.GetComponent<Slot>();
             if (slot != null && slot.currentItem == null)
             {
                 GameObject newItem = Instantiate(itemPrefab, slotTransform);
-
                 RectTransform rect = newItem.GetComponent<RectTransform>();
                 rect.anchoredPosition = Vector2.zero;
                 rect.localScale = Vector3.one;
 
-                slot.currentItem = newItem;
+                Item newItemComponent = newItem.GetComponent<Item>();
+                if (newItemComponent != null)
+                {
+                    newItemComponent.quantity = quantity;
+                    newItemComponent.UpdateQuantityDisplay();
+                }
 
+                slot.currentItem = newItem;
                 return true;
             }
         }
 
-        Debug.Log("Inventory is full!");
+        Debug.Log("Hotbar is full!");
         return false;
     }
 
     private void EnsureSlotCount()
     {
-        // אם יש פחות מדי סלוטים — תיצור
         while (hotbarPanel.transform.childCount < slotCount)
-        {
             Instantiate(slotPrefab, hotbarPanel.transform);
-        }
 
-        // אם יש יותר מדי — תמחק
         while (hotbarPanel.transform.childCount > slotCount)
-        {
             DestroyImmediate(
                 hotbarPanel.transform
                 .GetChild(hotbarPanel.transform.childCount - 1)
                 .gameObject
             );
-        }
     }
 
-    // ================================
-    // SAVE
-    // ================================
     public List<InventorySaveData> GetInventoryItems()
     {
         List<InventorySaveData> saveData = new List<InventorySaveData>();
@@ -117,11 +123,11 @@ public class HotbarController : MonoBehaviour
             if (slot.currentItem != null)
             {
                 Item item = slot.currentItem.GetComponent<Item>();
-
                 saveData.Add(new InventorySaveData
                 {
                     itemID = item.ID,
-                    slotIndex = i
+                    slotIndex = i,
+                    quantity = item.quantity
                 });
             }
         }
@@ -129,9 +135,6 @@ public class HotbarController : MonoBehaviour
         return saveData;
     }
 
-    // ================================
-    // LOAD
-    // ================================
     public void SetHotbarItems(List<InventorySaveData> savedItems)
     {
         if (itemDictionary == null)
@@ -162,6 +165,13 @@ public class HotbarController : MonoBehaviour
             GameObject itemInstance = Instantiate(itemPrefab, slotTransform);
             itemInstance.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
 
+            Item itemComponent = itemInstance.GetComponent<Item>();
+            if (itemComponent != null)
+            {
+                itemComponent.quantity = data.quantity;
+                itemComponent.UpdateQuantityDisplay();
+            }
+
             slot.currentItem = itemInstance;
         }
     }
@@ -171,7 +181,6 @@ public class HotbarController : MonoBehaviour
         foreach (Transform child in hotbarPanel.transform)
         {
             Slot slot = child.GetComponent<Slot>();
-
             if (slot.currentItem != null)
             {
                 Destroy(slot.currentItem);
@@ -180,4 +189,3 @@ public class HotbarController : MonoBehaviour
         }
     }
 }
-

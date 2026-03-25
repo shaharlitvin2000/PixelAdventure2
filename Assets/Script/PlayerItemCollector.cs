@@ -1,20 +1,18 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerItemCollector : MonoBehaviour
 {
     private InventoryController inventoryController;
-    // Start is called before the first frame update
+
     void Start()
     {
         inventoryController = FindObjectOfType<InventoryController>();
-
         if (inventoryController == null)
-        {
             Debug.LogError("InventoryController not found in scene!");
-        }
     }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Item"))
@@ -22,8 +20,10 @@ public class PlayerItemCollector : MonoBehaviour
             Item item = collision.GetComponent<Item>();
             if (item != null)
             {
-                bool itemAdded = inventoryController.AddItem(collision.gameObject);
+                // ✅ Save quantity BEFORE anything touches it
+                int quantityOnGround = item.quantity;
 
+                bool itemAdded = inventoryController.AddItem(collision.gameObject, quantityOnGround);
                 if (itemAdded)
                 {
                     item.PickUp();
