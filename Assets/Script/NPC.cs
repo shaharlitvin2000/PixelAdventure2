@@ -11,6 +11,10 @@ public class NPC : MonoBehaviour, IInteractable
 
     private int dialogueIndex;
     private bool isTyping, isDialogueActive, isWaitingForChoice;
+    private bool inputCooldown; // FIX: מונע קליק כפול
+
+    private enum QuestState { NotStarted, InProgress, Completed }
+    private QuestState queststate = QuestState.NotStarted;
 
     void Start()
     {
@@ -34,12 +38,34 @@ public class NPC : MonoBehaviour, IInteractable
 
     void StartDialogue()
     {
+        SyncQuestState();
+
+        if (queststate == QuestState.NotStarted)
+            dialogueIndex = 0;
+        else if (queststate == QuestState.InProgress)
+            dialogueIndex = dialogueData.questInProgressIndex;
+        else if (queststate == QuestState.Completed)
+            dialogueIndex = dialogueData.questCompletedIndex;
+
         isDialogueActive = true;
-        dialogueIndex = 0;
         dialogueUI.ShowDialogueUI(true);
         dialogueUI.SetNPCInfo(dialogueData.npcName, dialogueData.npcPortrait);
         PauseController.SetPause(true);
         StartCoroutine(TypeLine());
+    }
+
+    private void SyncQuestState()
+    {
+        if (dialogueData.quest == null) return;
+
+        string questID = dialogueData.quest.questID;
+
+        if (QuestController.instance.IsQuestCompleted(questID))
+            queststate = QuestState.Completed;
+        else if (QuestController.instance.IsQuestActive(questID))
+            queststate = QuestState.InProgress;
+        else
+            queststate = QuestState.NotStarted;
     }
 
     void Update()
@@ -50,8 +76,8 @@ public class NPC : MonoBehaviour, IInteractable
             return;
         }
 
-        // לא מאפשר קליק בזמן בחירה
         if (isWaitingForChoice) return;
+        if (inputCooldown) return; // FIX: חסום קלט בזמן cooldown
 
         if (isDialogueActive && Input.GetMouseButtonDown(0))
             NextLine();
@@ -65,7 +91,6 @@ public class NPC : MonoBehaviour, IInteractable
             dialogueUI.SetDialogueText(dialogueData.dialogueLines[dialogueIndex]);
             isTyping = false;
 
-            // בדוק endDialogue אחרי Skip
             if (dialogueData.endDialogueLines.Length > dialogueIndex &&
                 dialogueData.endDialogueLines[dialogueIndex])
             {
@@ -73,24 +98,33 @@ public class NPC : MonoBehaviour, IInteractable
                 return;
             }
 
+            // FIX: cooldown אחרי skip כדי למנוע קליק כפול
+            StartCoroutine(InputCooldown());
             CheckForChoices();
             return;
         }
 
         if (++dialogueIndex < dialogueData.dialogueLines.Length)
-        {
             StartCoroutine(TypeLine());
-        }
         else
-        {
             EndDialogue();
-        }
+    }
+
+    // FIX: מונע קליק כפול - מחכה פריים אחד לפני שמקבל קלט חדש
+    IEnumerator InputCooldown()
+    {
+        inputCooldown = true;
+        yield return null; // מחכה פריים אחד
+        inputCooldown = false;
     }
 
     IEnumerator TypeLine()
     {
         isTyping = true;
+        inputCooldown = true; // FIX: חסום קלט בזמן שמתחיל שורה חדשה
         dialogueUI.SetDialogueText("");
+        yield return null; // FIX: מחכה פריים אחד לפני שמתחיל להקליד
+        inputCooldown = false;
 
         foreach (char letter in dialogueData.dialogueLines[dialogueIndex])
         {
@@ -102,7 +136,6 @@ public class NPC : MonoBehaviour, IInteractable
 
         isTyping = false;
 
-        // בדוק אם השורה הזו מסיימת את הדיאלוג
         if (dialogueData.endDialogueLines.Length > dialogueIndex &&
             dialogueData.endDialogueLines[dialogueIndex])
         {
@@ -111,7 +144,6 @@ public class NPC : MonoBehaviour, IInteractable
             yield break;
         }
 
-        // Auto progress
         if (dialogueData.autoProgressLines.Length > dialogueIndex &&
             dialogueData.autoProgressLines[dialogueIndex])
         {
@@ -120,7 +152,6 @@ public class NPC : MonoBehaviour, IInteractable
             yield break;
         }
 
-        // בדוק בחירות
         CheckForChoices();
     }
 
@@ -145,9 +176,18 @@ public class NPC : MonoBehaviour, IInteractable
         dialogueUI.ShowChoices(choice.choices, (selectedIndex) =>
         {
             isWaitingForChoice = false;
+
+            if (choice.givesQuest != null &&
+                selectedIndex < choice.givesQuest.Length &&
+                choice.givesQuest[selectedIndex] &&
+                dialogueData.quest != null)
+            {
+                QuestController.instance.AcceptQuest(dialogueData.quest);
+                SyncQuestState();
+            }
+
             int nextIndex = choice.nextDialogueIndex[selectedIndex];
 
-            // -1 = סיום דיאלוג
             if (nextIndex < 0)
             {
                 EndDialogue();
@@ -164,6 +204,7 @@ public class NPC : MonoBehaviour, IInteractable
         StopAllCoroutines();
         isDialogueActive = false;
         isWaitingForChoice = false;
+        inputCooldown = false; // FIX: ריסט cooldown בסיום
         dialogueUI.HideChoices();
 
         if (dialogueUI != null)

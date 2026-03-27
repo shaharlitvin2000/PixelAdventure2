@@ -19,8 +19,10 @@ MonoBehaviour:
   - Can you help?
   - Fuck You!!!
   - Thanks
-  autoProgressLines: 010000
-  endDialogueLines: 00000101
+  - Good luck finding those posions!
+  - 'Thanks for the potion!  <:'
+  autoProgressLines: 010000000000
+  endDialogueLines: 000001010101
   autoProgressDelay: 1.5
   typingSpeed: 0.05
   voiceSound: {fileID: 8300000, guid: e0ecd3bcc0f9fc041be8aff77292b17a, type: 3}
@@ -31,3 +33,7 @@ MonoBehaviour:
     - No
     - Yes
     nextDialogueIndex: 0200000003000000
+    givesQuest: 0001
+  questInProgressIndex: 4
+  questCompletedIndex: 5
+  quest: {fileID: 11400000, guid: e52140ab9ba52fb408fed5d4eec68998, type: 2}

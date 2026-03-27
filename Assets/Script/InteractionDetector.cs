@@ -13,83 +13,95 @@ public class InteractionDetector : MonoBehaviour
 
     void Start()
     {
-        if (interactionIcon != null) interactionIcon.SetActive(false);
+        // FIX: null guard — warns you clearly instead of spamming UnassignedReferenceException
+        if (interactionIcon == null)
+        {
+            Debug.LogError("InteractionDetector: 'interactionIcon' is not assigned in the Inspector!", this);
+            return;
+        }
+
+        interactionIcon.SetActive(false);
     }
 
     void Update()
     {
+        // FIX: null guard at top of Update — stops all spam if icon isn't assigned
+        if (interactionIcon == null) return;
+
         if (PauseController.IsGamePaused)
         {
             if (interactionIcon.activeSelf) interactionIcon.SetActive(false);
         }
         else if (interactableInRange != null)
         {
-            // בדיקה אם האובייקט נמחק (למשל נאסף לאינוונטורי)
             MonoBehaviour mb = interactableInRange as MonoBehaviour;
             if (mb != null)
             {
                 if (interactableInRange.CanInteract())
                 {
                     if (!interactionIcon.activeSelf) interactionIcon.SetActive(true);
-
-                    // התיקון: מעדכנים את המיקום של האייקון בכל פריים כדי שיעקוב אחרי ה-NPC בזמן שהוא זז
                     interactionIcon.transform.position = mb.transform.position + iconOffset;
+                }
+                // FIX: if CanInteract() is false, hide the icon
+                else
+                {
+                    if (interactionIcon.activeSelf) interactionIcon.SetActive(false);
                 }
             }
             else
             {
-                // האובייקט כבר לא קיים בסצנה
                 interactableInRange = null;
                 if (interactionIcon.activeSelf) interactionIcon.SetActive(false);
             }
+        }
+        // FIX: if nothing is in range, make sure icon is hidden
+        else
+        {
+            if (interactionIcon.activeSelf) interactionIcon.SetActive(false);
         }
     }
 
     public void OnInteract(InputAction.CallbackContext context)
     {
         if (PauseController.IsGamePaused) return;
+        if (interactionIcon == null) return; // FIX: null guard
 
         if (context.performed && interactableInRange != null)
         {
-            // וודא שהאובייקט עדיין קיים לפני האינטראקציה
             MonoBehaviour mb = interactableInRange as MonoBehaviour;
             if (mb != null)
             {
                 interactableInRange.Interact();
-
                 if (!interactableInRange.CanInteract())
-                {
                     interactionIcon.SetActive(false);
-                }
             }
         }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        if (interactionIcon == null) return; // FIX: null guard
+
         if (collision.TryGetComponent(out IInteractable interactable) && interactable.CanInteract())
         {
             interactableInRange = interactable;
             interactionIcon.transform.position = collision.transform.position + iconOffset;
-
             if (!PauseController.IsGamePaused)
-            {
                 interactionIcon.SetActive(true);
-            }
         }
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        // הגנה קריטית: אם האובייקט כבר נמחק (Destroyed), אל תמשיך
         if (collision == null || collision.gameObject == null) return;
+        if (interactionIcon == null) return; // FIX: null guard
 
         if (collision.TryGetComponent(out IInteractable interactable))
         {
             if (interactable == interactableInRange)
             {
                 interactableInRange = null;
-                if (interactionIcon != null) interactionIcon.SetActive(false);
+                interactionIcon.SetActive(false);
             }
         }
     }

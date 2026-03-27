@@ -72,9 +72,11 @@
     <Compile Include="Assets\Script\NPC.cs" />
     <Compile Include="Assets\Script\InventorySaveData.cs" />
     <Compile Include="Assets\Script\PauseController.cs" />
+    <Compile Include="Assets\Script\QuestUI.cs" />
     <Compile Include="Assets\Script\Slot.cs" />
     <Compile Include="Assets\Script\ItemPickupUIController.cs" />
     <Compile Include="Assets\Script\SaveController.cs" />
+    <Compile Include="Assets\Script\QuestController.cs" />
     <Compile Include="Assets\Script\Item.cs" />
     <Compile Include="Assets\Script\SoundEffectLibrary.cs" />
     <Compile Include="Assets\Script\DialogueController.cs" />
@@ -83,6 +85,7 @@
     <Compile Include="Assets\Script\HotbarController.cs" />
     <Compile Include="Assets\Script\SaveData.cs" />
     <Compile Include="Assets\Script\BounceEffect.cs" />
+    <Compile Include="Assets\Script\Quest.cs" />
     <Compile Include="Assets\Script\MenuController.cs" />
     <Compile Include="Assets\Script\ItemDragHandler.cs" />
     <Compile Include="Assets\Script\NPCDialogue.cs" />
