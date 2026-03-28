@@ -11,7 +11,7 @@ public class NPC : MonoBehaviour, IInteractable
 
     private int dialogueIndex;
     private bool isTyping, isDialogueActive, isWaitingForChoice;
-    private bool inputCooldown; // FIX: מונע קליק כפול
+    private bool inputCooldown;
 
     private enum QuestState { NotStarted, InProgress, Completed }
     private QuestState queststate = QuestState.NotStarted;
@@ -77,7 +77,7 @@ public class NPC : MonoBehaviour, IInteractable
         }
 
         if (isWaitingForChoice) return;
-        if (inputCooldown) return; // FIX: חסום קלט בזמן cooldown
+        if (inputCooldown) return;
 
         if (isDialogueActive && Input.GetMouseButtonDown(0))
             NextLine();
@@ -98,9 +98,16 @@ public class NPC : MonoBehaviour, IInteractable
                 return;
             }
 
-            // FIX: cooldown אחרי skip כדי למנוע קליק כפול
             StartCoroutine(InputCooldown());
             CheckForChoices();
+            return;
+        }
+
+        // FIX: בדוק endDialogue לפני שמתקדמים לשורה הבאה
+        if (dialogueData.endDialogueLines.Length > dialogueIndex &&
+            dialogueData.endDialogueLines[dialogueIndex])
+        {
+            EndDialogue();
             return;
         }
 
@@ -110,20 +117,19 @@ public class NPC : MonoBehaviour, IInteractable
             EndDialogue();
     }
 
-    // FIX: מונע קליק כפול - מחכה פריים אחד לפני שמקבל קלט חדש
     IEnumerator InputCooldown()
     {
         inputCooldown = true;
-        yield return null; // מחכה פריים אחד
+        yield return null;
         inputCooldown = false;
     }
 
     IEnumerator TypeLine()
     {
         isTyping = true;
-        inputCooldown = true; // FIX: חסום קלט בזמן שמתחיל שורה חדשה
+        inputCooldown = true;
         dialogueUI.SetDialogueText("");
-        yield return null; // FIX: מחכה פריים אחד לפני שמתחיל להקליד
+        yield return null;
         inputCooldown = false;
 
         foreach (char letter in dialogueData.dialogueLines[dialogueIndex])
@@ -139,7 +145,9 @@ public class NPC : MonoBehaviour, IInteractable
         if (dialogueData.endDialogueLines.Length > dialogueIndex &&
             dialogueData.endDialogueLines[dialogueIndex])
         {
-            yield return new WaitForSeconds(dialogueData.autoProgressDelay);
+            // FIX: אם autoProgressDelay הוא 0 - סגור מיד בלי לחכות
+            if (dialogueData.autoProgressDelay > 0)
+                yield return new WaitForSeconds(dialogueData.autoProgressDelay);
             EndDialogue();
             yield break;
         }
@@ -204,7 +212,7 @@ public class NPC : MonoBehaviour, IInteractable
         StopAllCoroutines();
         isDialogueActive = false;
         isWaitingForChoice = false;
-        inputCooldown = false; // FIX: ריסט cooldown בסיום
+        inputCooldown = false;
         dialogueUI.HideChoices();
 
         if (dialogueUI != null)

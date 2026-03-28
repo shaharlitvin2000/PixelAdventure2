@@ -26,8 +26,3 @@ MonoBehaviour:
     type: 0
     requiredAmount: 5
     currentAmount: 0
-  - objectiveID: 2
-    description: Collect 10 Potions
-    type: 0
-    requiredAmount: 10
-    currentAmount: 0

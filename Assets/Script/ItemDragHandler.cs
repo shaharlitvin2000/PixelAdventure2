@@ -147,9 +147,11 @@ public class ItemDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         Transform playerTransform = playerObject.transform;
         Camera cam = Camera.main;
 
+
         Vector3 mouseWorld = cam.ScreenToWorldPoint(
             new Vector3(mousePosition.x, mousePosition.y,
             cam.WorldToScreenPoint(playerTransform.position).z)
+
         );
 
         Vector2 direction = (mouseWorld - playerTransform.position).normalized;
@@ -174,6 +176,7 @@ public class ItemDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             bounce.StartBounce();
 
         Destroy(gameObject);
+        InventoryController.instance.RebuildItemCounts();
     }
 
     public void OnPointerClick(PointerEventData eventData)

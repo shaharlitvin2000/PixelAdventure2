@@ -1,9 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class InventoryController : MonoBehaviour
 {
     public static InventoryController instance;
+    Dictionary<int, int> itemCountCache = new();
+    public event Action OnInventoryChange;
 
     [Header("References")]
     [SerializeField] private ItemDictionary itemDictionary;
@@ -30,15 +33,36 @@ public class InventoryController : MonoBehaviour
             Debug.LogError("slotPrefab is NULL!");
 
         EnsureSlotCount();
+        RebuildItemCounts(); // ✅ אחרי אתחול
     }
 
-    // ✅ quantity parameter added
+    public void RebuildItemCounts()
+    {
+        itemCountCache.Clear();
+
+        foreach (Transform slotTransform in inventoryPanel.transform)
+        {
+            Slot slot = slotTransform.GetComponent<Slot>();
+            if (slot.currentItem != null)
+            {
+                Item item = slot.currentItem.GetComponent<Item>();
+                if (item != null)
+                {
+                    itemCountCache[item.ID] = itemCountCache.GetValueOrDefault(item.ID, 0) + item.quantity;
+                }
+            }
+        }
+
+        OnInventoryChange?.Invoke(); // FIX: null-safe — קרס אם אין מאזינים
+    }
+
+    public Dictionary<int, int> GetItemCounts() => itemCountCache;
+
     public bool AddItem(GameObject itemPrefab, int quantity = 1)
     {
         Item itemToAdd = itemPrefab.GetComponent<Item>();
         if (itemToAdd == null) return false;
 
-        // ✅ Try to stack onto existing same item first
         foreach (Transform slotTransform in inventoryPanel.transform)
         {
             Slot slot = slotTransform.GetComponent<Slot>();
@@ -47,14 +71,13 @@ public class InventoryController : MonoBehaviour
                 Item slotItem = slot.currentItem.GetComponent<Item>();
                 if (slotItem != null && slotItem.ID == itemToAdd.ID)
                 {
-                    // ✅ Pass actual quantity, not hardcoded 1
                     slotItem.AddToStack(quantity);
+                    RebuildItemCounts(); // ✅ אחרי stack
                     return true;
                 }
             }
         }
 
-        // ✅ Empty slot — create new item with correct quantity
         foreach (Transform slotTransform in inventoryPanel.transform)
         {
             Slot slot = slotTransform.GetComponent<Slot>();
@@ -65,7 +88,6 @@ public class InventoryController : MonoBehaviour
                 rect.anchoredPosition = Vector2.zero;
                 rect.localScale = Vector3.one;
 
-                // ✅ Set correct quantity
                 Item newItemComponent = newItem.GetComponent<Item>();
                 if (newItemComponent != null)
                 {
@@ -74,6 +96,7 @@ public class InventoryController : MonoBehaviour
                 }
 
                 slot.currentItem = newItem;
+                RebuildItemCounts(); // ✅ אחרי הוספה לסלוט חדש
                 return true;
             }
         }
@@ -107,6 +130,7 @@ public class InventoryController : MonoBehaviour
             if (slot.currentItem != null)
             {
                 Item item = slot.currentItem.GetComponent<Item>();
+                // FIX: הוצא את RebuildItemCounts מתוך ה-initializer — syntax error
                 saveData.Add(new InventorySaveData
                 {
                     itemID = item.ID,
@@ -116,6 +140,7 @@ public class InventoryController : MonoBehaviour
             }
         }
 
+        RebuildItemCounts(); // ✅ אחרי קריאת כל הפריטים
         return saveData;
     }
 
@@ -158,6 +183,8 @@ public class InventoryController : MonoBehaviour
 
             slot.currentItem = itemInstance;
         }
+
+        RebuildItemCounts(); // ✅ אחרי טעינת כל הפריטים מהסייב
     }
 
     private void ClearAllSlots()
@@ -171,5 +198,7 @@ public class InventoryController : MonoBehaviour
                 slot.currentItem = null;
             }
         }
+
+        RebuildItemCounts(); // ✅ אחרי ניקוי כל הסלוטים
     }
 }
