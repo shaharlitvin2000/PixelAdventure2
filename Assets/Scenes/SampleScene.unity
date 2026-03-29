@@ -7920,6 +7920,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   activateQuest: []
   completedQuests: []
+  allQuests:
+  - {fileID: 11400000, guid: e52140ab9ba52fb408fed5d4eec68998, type: 2}
 --- !u!1 &1092771017
 GameObject:
   m_ObjectHideFlags: 0

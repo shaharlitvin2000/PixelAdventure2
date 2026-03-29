@@ -33,7 +33,7 @@ public class InventoryController : MonoBehaviour
             Debug.LogError("slotPrefab is NULL!");
 
         EnsureSlotCount();
-        RebuildItemCounts(); // ✅ אחרי אתחול
+        RebuildItemCounts();
     }
 
     public void RebuildItemCounts()
@@ -53,7 +53,7 @@ public class InventoryController : MonoBehaviour
             }
         }
 
-        OnInventoryChange?.Invoke(); // FIX: null-safe — קרס אם אין מאזינים
+        OnInventoryChange?.Invoke();
     }
 
     public Dictionary<int, int> GetItemCounts() => itemCountCache;
@@ -72,7 +72,7 @@ public class InventoryController : MonoBehaviour
                 if (slotItem != null && slotItem.ID == itemToAdd.ID)
                 {
                     slotItem.AddToStack(quantity);
-                    RebuildItemCounts(); // ✅ אחרי stack
+                    RebuildItemCounts();
                     return true;
                 }
             }
@@ -96,13 +96,43 @@ public class InventoryController : MonoBehaviour
                 }
 
                 slot.currentItem = newItem;
-                RebuildItemCounts(); // ✅ אחרי הוספה לסלוט חדש
+                RebuildItemCounts();
                 return true;
             }
         }
 
         Debug.Log("Inventory is full!");
         return false;
+    }
+
+    public int RemoveItemsAndReturnRemaining(int itemID, int amountToRemove)
+    {
+        foreach (Transform slotTransform in inventoryPanel.transform)
+        {
+            if (amountToRemove <= 0) break;
+
+            Slot slot = slotTransform.GetComponent<Slot>();
+            if (slot?.currentItem?.GetComponent<Item>() is Item item && item.ID == itemID)
+            {
+                int removed = Mathf.Min(amountToRemove, item.quantity);
+                item.RemoveFromStack(removed);
+                amountToRemove -= removed;
+
+                if (item.quantity <= 0)
+                {
+                    Destroy(slot.currentItem);
+                    slot.currentItem = null;
+                }
+            }
+        }
+
+        RebuildItemCounts();
+        return amountToRemove;
+    }
+
+    public void RemoveItemFromInventory(int itemID, int amountToRemove)
+    {
+        RemoveItemsAndReturnRemaining(itemID, amountToRemove);
     }
 
     private void EnsureSlotCount()
@@ -130,7 +160,6 @@ public class InventoryController : MonoBehaviour
             if (slot.currentItem != null)
             {
                 Item item = slot.currentItem.GetComponent<Item>();
-                // FIX: הוצא את RebuildItemCounts מתוך ה-initializer — syntax error
                 saveData.Add(new InventorySaveData
                 {
                     itemID = item.ID,
@@ -140,7 +169,7 @@ public class InventoryController : MonoBehaviour
             }
         }
 
-        RebuildItemCounts(); // ✅ אחרי קריאת כל הפריטים
+        RebuildItemCounts();
         return saveData;
     }
 
@@ -184,7 +213,7 @@ public class InventoryController : MonoBehaviour
             slot.currentItem = itemInstance;
         }
 
-        RebuildItemCounts(); // ✅ אחרי טעינת כל הפריטים מהסייב
+        RebuildItemCounts();
     }
 
     private void ClearAllSlots()
@@ -199,6 +228,6 @@ public class InventoryController : MonoBehaviour
             }
         }
 
-        RebuildItemCounts(); // ✅ אחרי ניקוי כל הסלוטים
+        RebuildItemCounts();
     }
 }

@@ -17,7 +17,6 @@ public class SaveController : MonoBehaviour
     private void Awake()
     {
         savePath = Application.persistentDataPath + "/save.json";
-
         inventoryController = FindObjectOfType<InventoryController>();
         hotbarController = FindObjectOfType<HotbarController>();
         confiner = FindObjectOfType<CinemachineConfiner2D>();
@@ -29,19 +28,14 @@ public class SaveController : MonoBehaviour
 
     private void Start()
     {
-        // מוצא את כל התיבות בסצנה
         chests = FindObjectsOfType<Chest>();
         LoadGame();
     }
 
     public void SaveGame()
     {
-        Debug.Log("SAVE CALLED");
-
-        // יצירת אובייקט מה-SaveData הקיים שלך
         SaveData data = new SaveData();
 
-        // שמירת מיקום
         if (player != null)
         {
             data.playerPosX = player.position.x;
@@ -49,30 +43,30 @@ public class SaveController : MonoBehaviour
             data.playerPosZ = player.position.z;
         }
 
-        // שמירת גבולות מצלמה
         if (confiner != null && confiner.m_BoundingShape2D != null)
-        {
             data.mapBoundary = confiner.m_BoundingShape2D.gameObject.name;
-        }
 
-        // שמירת אינוונטורי
         if (inventoryController != null)
             data.inventorySaveData = inventoryController.GetInventoryItems();
 
         if (hotbarController != null)
             data.hotbarSaveData = hotbarController.GetInventoryItems();
 
-        // שמירת תיבות
         data.chestSaveDatas = GetChestsState();
+
+        // FIX: משתמש ב-GetQuestSaveData במקום לשמור את הרשימה ישירות
+        data.questProgressData = QuestController.instance.GetQuestSaveData();
+
+        data.handinQuestIDs = QuestController.instance.handinQuestIDs;
 
         string json = JsonUtility.ToJson(data, true);
         File.WriteAllText(savePath, json);
-        Debug.Log("Game Saved Successfully");
+        Debug.Log("Game Saved!");
     }
 
     private List<ChestSaveData> GetChestsState()
     {
-        List<ChestSaveData> chestList = new List<ChestSaveData>();
+        List<ChestSaveData> chestList = new();
         if (chests == null) return chestList;
 
         foreach (Chest chest in chests)
@@ -93,11 +87,9 @@ public class SaveController : MonoBehaviour
         string json = File.ReadAllText(savePath);
         SaveData data = JsonUtility.FromJson<SaveData>(json);
 
-        // טעינת מיקום
         if (player != null)
             player.position = new Vector3(data.playerPosX, data.playerPosY, data.playerPosZ);
 
-        // טעינת מצלמה
         if (!string.IsNullOrEmpty(data.mapBoundary))
         {
             GameObject boundaryObject = GameObject.Find(data.mapBoundary);
@@ -108,16 +100,19 @@ public class SaveController : MonoBehaviour
             }
         }
 
-        // טעינת פריטים
         if (inventoryController != null && data.inventorySaveData != null)
             inventoryController.SetInventoryItems(data.inventorySaveData);
 
         if (hotbarController != null && data.hotbarSaveData != null)
             hotbarController.SetHotbarItems(data.hotbarSaveData);
 
-        // טעינת תיבות
         if (data.chestSaveDatas != null)
             LoadChestStates(data.chestSaveDatas);
+
+        // FIX: קריאה נכונה עם הפרמטר הנכון
+        QuestController.instance.LoadQuestProgress(data.questProgressData);
+        QuestController.instance.handinQuestIDs = data.handinQuestIDs;
+
     }
 
     private void LoadChestStates(List<ChestSaveData> chestState)

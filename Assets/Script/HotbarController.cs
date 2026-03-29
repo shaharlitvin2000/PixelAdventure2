@@ -51,12 +51,10 @@ public class HotbarController : MonoBehaviour
         }
     }
 
-    // ✅ quantity parameter added + stacking support
     public bool GetHotberItem(GameObject itemPrefab, int quantity = 1)
     {
         Item incomingItem = itemPrefab.GetComponent<Item>();
 
-        // ✅ First try to stack onto existing same item
         foreach (Transform slotTransform in hotbarPanel.transform)
         {
             Slot slot = slotTransform.GetComponent<Slot>();
@@ -71,7 +69,6 @@ public class HotbarController : MonoBehaviour
             }
         }
 
-        // ✅ Then find empty slot and set correct quantity
         foreach (Transform slotTransform in hotbarPanel.transform)
         {
             Slot slot = slotTransform.GetComponent<Slot>();
@@ -96,6 +93,28 @@ public class HotbarController : MonoBehaviour
 
         Debug.Log("Hotbar is full!");
         return false;
+    }
+
+    public void RemoveItemFromHotbar(int itemID, int amountToRemove)
+    {
+        foreach (Transform slotTransform in hotbarPanel.transform)
+        {
+            if (amountToRemove <= 0) break;
+
+            Slot slot = slotTransform.GetComponent<Slot>();
+            if (slot?.currentItem?.GetComponent<Item>() is Item item && item.ID == itemID)
+            {
+                int removed = Mathf.Min(amountToRemove, item.quantity);
+                item.RemoveFromStack(removed);
+                amountToRemove -= removed;
+
+                if (item.quantity <= 0)
+                {
+                    Destroy(slot.currentItem);
+                    slot.currentItem = null;
+                }
+            }
+        }
     }
 
     private void EnsureSlotCount()

@@ -60,12 +60,24 @@ public class NPC : MonoBehaviour, IInteractable
 
         string questID = dialogueData.quest.questID;
 
-        if (QuestController.instance.IsQuestCompleted(questID))
+        // בדיקת סדר נכון: HandedIn > ObjectivesComplete > Active > NotStarted
+        if (QuestController.instance.IsQuestHandedIn(questID))
+        {
             queststate = QuestState.Completed;
+        }
+        else if (QuestController.instance.IsQuestActive(questID) &&
+                 QuestController.instance.IsQuestObjectivesComplete(questID))
+        {
+            queststate = QuestState.Completed; // אובייקטיבים הושלמו - הצג הודיה
+        }
         else if (QuestController.instance.IsQuestActive(questID))
+        {
             queststate = QuestState.InProgress;
+        }
         else
+        {
             queststate = QuestState.NotStarted;
+        }
     }
 
     void Update()
@@ -103,7 +115,6 @@ public class NPC : MonoBehaviour, IInteractable
             return;
         }
 
-        // FIX: בדוק endDialogue לפני שמתקדמים לשורה הבאה
         if (dialogueData.endDialogueLines.Length > dialogueIndex &&
             dialogueData.endDialogueLines[dialogueIndex])
         {
@@ -145,7 +156,6 @@ public class NPC : MonoBehaviour, IInteractable
         if (dialogueData.endDialogueLines.Length > dialogueIndex &&
             dialogueData.endDialogueLines[dialogueIndex])
         {
-            // FIX: אם autoProgressDelay הוא 0 - סגור מיד בלי לחכות
             if (dialogueData.autoProgressDelay > 0)
                 yield return new WaitForSeconds(dialogueData.autoProgressDelay);
             EndDialogue();
@@ -209,6 +219,15 @@ public class NPC : MonoBehaviour, IInteractable
 
     public void EndDialogue()
     {
+        // אם הדיאלוג נגמר והמשימה מושלמת - קרא להחזרת פריטים
+        if (dialogueData.quest != null &&
+            queststate == QuestState.Completed &&
+            QuestController.instance.IsQuestActive(dialogueData.quest.questID) &&
+            QuestController.instance.IsQuestObjectivesComplete(dialogueData.quest.questID))
+        {
+            QuestController.instance.HandInQuest(dialogueData.quest.questID);
+        }
+
         StopAllCoroutines();
         isDialogueActive = false;
         isWaitingForChoice = false;

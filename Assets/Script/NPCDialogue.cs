@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "NewNPCDialouge", menuName = "NPC Dialogue")]
+[CreateAssetMenu(fileName = "NewNPCDialogue", menuName = "NPC Dialogue")]
 public class NPCDialogue : ScriptableObject
 {
     public string npcName;
@@ -14,10 +14,7 @@ public class NPCDialogue : ScriptableObject
     public float typingSpeed = 0.05f;
     public AudioClip voiceSound;
     public float voicePitch = 1f;
-
-
     public DialogueChoice[] choices;
-
     public int questInProgressIndex;
     public int questCompletedIndex;
     public Quest quest;
