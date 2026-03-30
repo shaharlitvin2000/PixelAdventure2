@@ -1,3 +1,4 @@
+﻿using System.Collections;
 using UnityEngine;
 using Cinemachine;
 
@@ -7,8 +8,9 @@ public class MapTransation : MonoBehaviour
 
     private CinemachineConfiner2D confiner;
 
-    public enum Direction { Up, Down, Right, Left }
+    public enum Direction { Up, Down, Right, Left, Teleport}
     [SerializeField] private Direction direction;
+    [SerializeField] private Transform teleportTargetPosition;
 
     [SerializeField] private float offsetAmount = 2f;
 
@@ -28,19 +30,47 @@ public class MapTransation : MonoBehaviour
         if (!collision.CompareTag("Player"))
             return;
 
+        // עדכן גבול מצלמה
         if (confiner != null && mapBoundery != null)
         {
             confiner.m_BoundingShape2D = mapBoundery;
             confiner.InvalidateCache();
         }
-        MapController_Manual.Instance?.HighlightArea(mapBoundery.name);
-        MapController_Dynamic.Instance?.UpdateCurrentArea(mapBoundery.name);
 
+        // הזז שחקן
         UpdatePlayerPosition(collision.gameObject);
+    }
+
+    private IEnumerator TeleportCamera(GameObject player, Vector3 deltaPosition)
+    {
+        // כבה את ה-Confiner
+        if (confiner != null)
+            confiner.enabled = false;
+
+        yield return null;
+
+        // עדכן גבול
+        if (confiner != null && mapBoundery != null)
+        {
+            confiner.m_BoundingShape2D = mapBoundery;
+            confiner.InvalidateCache();
+            confiner.enabled = true;
+        }
+
+        // קפוץ מצלמה
+        CinemachineVirtualCamera vcam = FindObjectOfType<CinemachineVirtualCamera>();
+        if (vcam != null)
+            vcam.OnTargetObjectWarped(player.transform, deltaPosition);
     }
 
     private void UpdatePlayerPosition(GameObject player)
     {
+        if (direction == Direction.Teleport)
+        {
+            player.transform.position = teleportTargetPosition.position;
+
+            return;
+        }
         Vector3 newPos = player.transform.position;
 
         switch (direction)

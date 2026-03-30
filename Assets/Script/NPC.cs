@@ -219,13 +219,13 @@ public class NPC : MonoBehaviour, IInteractable
 
     public void EndDialogue()
     {
-        // אם הדיאלוג נגמר והמשימה מושלמת - קרא להחזרת פריטים
+        // אם הדיאלוג נגמר והמשימה מושלמת - תן פרסים והחזר פריטים
         if (dialogueData.quest != null &&
             queststate == QuestState.Completed &&
             QuestController.instance.IsQuestActive(dialogueData.quest.questID) &&
             QuestController.instance.IsQuestObjectivesComplete(dialogueData.quest.questID))
         {
-            QuestController.instance.HandInQuest(dialogueData.quest.questID);
+            HandleQuestCompletion(dialogueData.quest); // FIX: תוקן שם הפונקציה וקריאה
         }
 
         StopAllCoroutines();
@@ -241,5 +241,11 @@ public class NPC : MonoBehaviour, IInteractable
         }
 
         PauseController.SetPause(false);
+    }
+
+    void HandleQuestCompletion(Quest quest) // FIX: תוקן שם הפונקציה
+    {
+        RewardController.instance.GiveQuestReward(quest);
+        QuestController.instance.HandInQuest(quest.questID);
     }
 }
