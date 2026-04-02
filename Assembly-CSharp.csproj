@@ -85,6 +85,7 @@
     <Compile Include="Assets\Script\PlayerItemCollector.cs" />
     <Compile Include="Assets\Script\HotbarController.cs" />
     <Compile Include="Assets\Script\SaveData.cs" />
+    <Compile Include="Assets\ScreenFader.cs" />
     <Compile Include="Assets\Script\BounceEffect.cs" />
     <Compile Include="Assets\Script\Quest.cs" />
     <Compile Include="Assets\Script\MenuController.cs" />

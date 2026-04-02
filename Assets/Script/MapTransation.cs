@@ -8,11 +8,14 @@ public class MapTransation : MonoBehaviour
 
     private CinemachineConfiner2D confiner;
 
-    public enum Direction { Up, Down, Right, Left, Teleport}
+    public enum Direction { Up, Down, Right, Left, Teleport }
     [SerializeField] private Direction direction;
     [SerializeField] private Transform teleportTargetPosition;
 
     [SerializeField] private float offsetAmount = 2f;
+
+    // 🔥 THIS IS THE IMPORTANT PART
+    [SerializeField] private float transitionDuration = 0.5f;
 
     private void Awake()
     {
@@ -22,7 +25,7 @@ public class MapTransation : MonoBehaviour
             Debug.LogError("CinemachineConfiner2D not found in scene!");
 
         if (mapBoundery == null)
-            Debug.LogError("Map Boundary (PolygonCollider2D) not assigned!");
+            Debug.LogError("Map Boundary not assigned!");
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -30,37 +33,51 @@ public class MapTransation : MonoBehaviour
         if (!collision.CompareTag("Player"))
             return;
 
-        // עדכן גבול מצלמה
-        if (confiner != null && mapBoundery != null)
-        {
-            confiner.m_BoundingShape2D = mapBoundery;
-            confiner.InvalidateCache();
-        }
-
-        // הזז שחקן
-        UpdatePlayerPosition(collision.gameObject);
+        FadeTransition(collision.gameObject);
     }
 
-    private IEnumerator TeleportCamera(GameObject player, Vector3 deltaPosition)
+    async void FadeTransition(GameObject player)
     {
-        // כבה את ה-Confiner
-        if (confiner != null)
-            confiner.enabled = false;
+        PauseController.SetPause(true);
 
-        yield return null;
-
-        // עדכן גבול
-        if (confiner != null && mapBoundery != null)
+        if (ScreenFader.instance == null)
         {
-            confiner.m_BoundingShape2D = mapBoundery;
-            confiner.InvalidateCache();
-            confiner.enabled = true;
+            Debug.LogError("ScreenFader not found!");
+
+            if (confiner != null && mapBoundery != null)
+            {
+                confiner.m_BoundingShape2D = mapBoundery;
+                confiner.InvalidateCache();
+            }
+
+            UpdatePlayerPosition(player);
+            return;
         }
 
-        // קפוץ מצלמה
+        // 🔥 USE CUSTOM DURATION
+        await ScreenFader.instance.FadeOut(transitionDuration);
+
+        if (confiner != null && mapBoundery != null)
+        {
+            confiner.enabled = false;
+            confiner.m_BoundingShape2D = mapBoundery;
+            confiner.InvalidateCache();
+        }
+
+        Vector3 oldPos = player.transform.position;
+        UpdatePlayerPosition(player);
+        Vector3 delta = player.transform.position - oldPos;
+
         CinemachineVirtualCamera vcam = FindObjectOfType<CinemachineVirtualCamera>();
         if (vcam != null)
-            vcam.OnTargetObjectWarped(player.transform, deltaPosition);
+            vcam.OnTargetObjectWarped(player.transform, delta);
+
+        if (confiner != null)
+            confiner.enabled = true;
+
+        await ScreenFader.instance.FadeIn(transitionDuration);
+
+        PauseController.SetPause(false);
     }
 
     private void UpdatePlayerPosition(GameObject player)
@@ -68,9 +85,9 @@ public class MapTransation : MonoBehaviour
         if (direction == Direction.Teleport)
         {
             player.transform.position = teleportTargetPosition.position;
-
             return;
         }
+
         Vector3 newPos = player.transform.position;
 
         switch (direction)

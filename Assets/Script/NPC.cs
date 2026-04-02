@@ -127,19 +127,14 @@ public class NPC : MonoBehaviour, IInteractable
         else
             EndDialogue();
     }
-
-    IEnumerator InputCooldown()
-    {
-        inputCooldown = true;
-        yield return null;
-        inputCooldown = false;
-    }
-
     IEnumerator TypeLine()
     {
         isTyping = true;
         inputCooldown = true;
         dialogueUI.SetDialogueText("");
+
+        // תיקון: המתן שני פריימים במקום אחד
+        yield return null;
         yield return null;
         inputCooldown = false;
 
@@ -171,6 +166,15 @@ public class NPC : MonoBehaviour, IInteractable
         }
 
         CheckForChoices();
+    }
+
+    IEnumerator InputCooldown()
+    {
+        inputCooldown = true;
+        // תיקון: המתן שני פריימים במקום אחד
+        yield return null;
+        yield return null;
+        inputCooldown = false;
     }
 
     void CheckForChoices()
