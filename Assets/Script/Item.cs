@@ -12,6 +12,10 @@ public class Item : MonoBehaviour
 
     private TMP_Text quantityText;
 
+    public int buyPrice = 10;
+    [Range(0,1)]
+    public float sellPriceMultiplayer = 0.5f;
+
     private void Awake()
     {
         quantityText = GetComponentInChildren<TMP_Text>();
@@ -20,6 +24,11 @@ public class Item : MonoBehaviour
             Debug.LogWarning($"[Item] No TMP_Text found in children of '{gameObject.name}'");
         else
             UpdateQuantityDisplay();
+    }
+
+    public int GetSellPrice()
+    {
+        return Mathf.RoundToInt(buyPrice * sellPriceMultiplayer);
     }
 
     public void UpdateQuantityDisplay()

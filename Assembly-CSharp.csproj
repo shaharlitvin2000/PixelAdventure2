@@ -81,6 +81,7 @@
     <Compile Include="Assets\Script\Item.cs" />
     <Compile Include="Assets\Script\SoundEffectLibrary.cs" />
     <Compile Include="Assets\Script\DialogueController.cs" />
+    <Compile Include="Assets\ShopSlot.cs" />
     <Compile Include="Assets\Script\InteractionDetector.cs" />
     <Compile Include="Assets\Script\PlayerItemCollector.cs" />
     <Compile Include="Assets\Script\HotbarController.cs" />
