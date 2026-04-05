@@ -20,6 +20,10 @@ PrefabInstance:
       propertyPath: Name
       value: Hearth
       objectReference: {fileID: 0}
+    - target: {fileID: 3180682033152244, guid: 9836796ab3cabee45a937aba97af04ba, type: 3}
+      propertyPath: buyPrice
+      value: 30
+      objectReference: {fileID: 0}
     - target: {fileID: 574639647612006210, guid: 9836796ab3cabee45a937aba97af04ba, type: 3}
       propertyPath: m_Name
       value: HeartItem Variant

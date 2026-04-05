@@ -263,6 +263,8 @@ MonoBehaviour:
   ID: 1
   Name: Potion
   quantity: 1
+  buyPrice: 50
+  sellPriceMultiplayer: 0.5
 --- !u!212 &-4146819935589290814
 SpriteRenderer:
   m_ObjectHideFlags: 0

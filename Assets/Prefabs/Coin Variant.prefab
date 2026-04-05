@@ -14,11 +14,15 @@ PrefabInstance:
       objectReference: {fileID: -1986940865, guid: 54b1f6aed43e96a41b8f853ce922935f, type: 3}
     - target: {fileID: 3180682033152244, guid: 9836796ab3cabee45a937aba97af04ba, type: 3}
       propertyPath: ID
-      value: 99
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 3180682033152244, guid: 9836796ab3cabee45a937aba97af04ba, type: 3}
       propertyPath: Name
       value: Coin
+      objectReference: {fileID: 0}
+    - target: {fileID: 3180682033152244, guid: 9836796ab3cabee45a937aba97af04ba, type: 3}
+      propertyPath: buyPrice
+      value: 200
       objectReference: {fileID: 0}
     - target: {fileID: 574639647612006210, guid: 9836796ab3cabee45a937aba97af04ba, type: 3}
       propertyPath: m_Name
